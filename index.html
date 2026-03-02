@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎮 Boss 游戏中心</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Microsoft YaHei', sans-serif;
+            padding: 20px;
+        }
+        .container { max-width: 1200px; margin: 0 auto; }
+        h1 {
+            text-align: center;
+            color: white;
+            font-size: 3em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        .subtitle {
+            text-align: center;
+            color: rgba(255,255,255,0.9);
+            font-size: 1.2em;
+            margin-bottom: 50px;
+        }
+        .games-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            padding: 20px;
+        }
+        .game-card {
+            background: rgba(255,255,255,0.95);
+            border-radius: 20px;
+            padding: 30px;
+            text-align: center;
+            transition: transform 0.3s, box-shadow 0.3s;
+            cursor: pointer;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        .game-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+        }
+        .game-icon { font-size: 4em; margin-bottom: 20px; }
+        .game-title { font-size: 1.8em; color: #333; margin-bottom: 10px; }
+        .game-desc { color: #666; font-size: 1em; line-height: 1.6; margin-bottom: 20px; }
+        .play-btn {
+            display: inline-block;
+            padding: 12px 40px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 25px;
+            font-size: 1.1em;
+            font-weight: bold;
+            transition: transform 0.2s;
+        }
+        .play-btn:hover { transform: scale(1.05); }
+        .status {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 15px;
+            font-size: 0.9em;
+            margin-top: 10px;
+        }
+        .status.ready { background: #d4edda; color: #155724; }
+        .status.coming { background: #fff3cd; color: #856404; }
+        .footer {
+            text-align: center;
+            color: rgba(255,255,255,0.8);
+            margin-top: 50px;
+            padding: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎮 Boss 游戏中心</h1>
+        <p class="subtitle">由 Moss 🦞 和 CodeBot 🤖 精心打造</p>
+        <div class="games-grid">
+            <div class="game-card">
+                <div class="game-icon">🐍</div>
+                <h3 class="game-title">贪吃蛇</h3>
+                <p class="game-desc">经典贪吃蛇游戏！键盘方向键控制，吃食物变长。</p>
+                <a href="snake.html" class="play-btn">开始游戏</a>
+                <div class="status ready">✅ 已上线</div>
+            </div>
+            <div class="game-card">
+                <div class="game-icon">⚫</div>
+                <h3 class="game-title">五子棋</h3>
+                <p class="game-desc">传统五子棋对战！黑白轮流下棋，五子连珠获胜。</p>
+                <a href="gobang.html" class="play-btn">开始游戏</a>
+                <div class="status ready">✅ 已上线</div>
+            </div>
+            <div class="game-card">
+                <div class="game-icon">🔢</div>
+                <h3 class="game-title">2048</h3>
+                <p class="game-desc">益智数字游戏！滑动合并数字，达到 2048 获胜。</p>
+                <a href="#" class="play-btn" style="background:#ccc;cursor:not-allowed;">敬请期待</a>
+                <div class="status coming">📝 开发中</div>
+            </div>
+            <div class="game-card">
+                <div class="game-icon">💣</div>
+                <h3 class="game-title">扫雷</h3>
+                <p class="game-desc">经典扫雷游戏！找出所有地雷，不要踩雷哦！</p>
+                <a href="#" class="play-btn" style="background:#ccc;cursor:not-allowed;">敬请期待</a>
+                <div class="status coming">📝 开发中</div>
+            </div>
+        </div>
+        <div class="footer">
+            <p>Made with ❤️ by Moss 🦞 & CodeBot 🤖</p>
+        </div>
+    </div>
+</body>
+</html>

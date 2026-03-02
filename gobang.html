@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>五子棋</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Microsoft YaHei', sans-serif;
+            padding: 20px;
+        }
+
+        .game-container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 2em;
+        }
+
+        .status {
+            text-align: center;
+            font-size: 1.3em;
+            margin-bottom: 20px;
+            padding: 15px;
+            border-radius: 10px;
+            background: #f0f0f0;
+            color: #333;
+            font-weight: bold;
+        }
+
+        .board-container {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .board {
+            display: grid;
+            grid-template-columns: repeat(15, 1fr);
+            gap: 0;
+            background: linear-gradient(135deg, #DEB887 0%, #D2691E 50%, #CD853F 100%);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.2),
+                        0 5px 20px rgba(0, 0, 0, 0.3);
+            position: relative;
+        }
+
+        .board::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url("data:image/svg+xml,%3Csvg width='100' height='100' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.1'/%3E%3C/svg%3E");
+            pointer-events: none;
+            border-radius: 10px;
+        }
+
+        .cell {
+            width: 32px;
+            height: 32px;
+            position: relative;
+            cursor: pointer;
+        }
+
+        .cell::before,
+        .cell::after {
+            content: '';
+            position: absolute;
+            background: rgba(0, 0, 0, 0.4);
+        }
+
+        .cell::before {
+            width: 100%;
+            height: 1px;
+            top: 50%;
+            left: 0;
+        }
+
+        .cell::after {
+            width: 1px;
+            height: 100%;
+            left: 50%;
+            top: 0;
+        }
+
+        .cell:first-child::before,
+        .cell:nth-child(-n+15)::before {
+            width: 50%;
+            left: 50%;
+        }
+
+        .cell:nth-child(15n+1)::after {
+            height: 50%;
+            top: 50%;
+        }
+
+        .cell:nth-child(15n)::before {
+            width: 50%;
+        }
+
+        .cell:nth-last-child(-n+15)::after {
+            height: 50%;
+        }
+
+        .cell.star::before {
+            content: '';
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 50%;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 1;
+        }
+
+        .stone {
+            position: absolute;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 2;
+            cursor: default;
+        }
+
+        .stone.black {
+            background: radial-gradient(circle at 30% 30%, #666, #000 70%);
+            box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5),
+                        inset -2px -2px 5px rgba(255, 255, 255, 0.1);
+        }
+
+        .stone.white {
+            background: radial-gradient(circle at 30% 30%, #fff, #ccc 70%);
+            box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3),
+                        inset -2px -2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .cell:hover::before {
+            content: '';
+            position: absolute;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 1;
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        .cell.occupied:hover::before {
+            display: none;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        button {
+            padding: 12px 30px;
+            font-size: 1.1em;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            font-weight: bold;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .winner-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s, visibility 0.3s;
+        }
+
+        .winner-overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .winner-modal {
+            background: white;
+            padding: 40px 60px;
+            border-radius: 20px;
+            text-align: center;
+            transform: scale(0.8);
+            transition: transform 0.3s;
+        }
+
+        .winner-overlay.show .winner-modal {
+            transform: scale(1);
+        }
+
+        .winner-modal h2 {
+            font-size: 2em;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .winner-modal button {
+            margin-top: 20px;
+        }
+
+        @media (max-width: 600px) {
+            .game-container {
+                padding: 15px;
+            }
+
+            h1 {
+                font-size: 1.5em;
+            }
+
+            .cell {
+                width: 22px;
+                height: 22px;
+            }
+
+            .stone {
+                width: 20px;
+                height: 20px;
+            }
+
+            .board {
+                padding: 15px;
+            }
+
+            .status {
+                font-size: 1.1em;
+                padding: 10px;
+            }
+
+            button {
+                padding: 10px 20px;
+                font-size: 1em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <h1>五子棋</h1>
+        <div class="status" id="status">黑方执子</div>
+        <div class="board-container">
+            <div class="board" id="board"></div>
+        </div>
+        <div class="controls">
+            <button onclick="restartGame()">重新开始</button>
+        </div>
+    </div>
+
+    <div class="winner-overlay" id="winnerOverlay">
+        <div class="winner-modal">
+            <h2 id="winnerText"></h2>
+            <button onclick="closeWinnerModal()">再来一局</button>
+        </div>
+    </div>
+
+    <script>
+        const BOARD_SIZE = 15;
+        const EMPTY = 0;
+        const BLACK = 1;
+        const WHITE = 2;
+
+        let board = [];
+        let currentPlayer = BLACK;
+        let gameOver = false;
+        let moveCount = 0;
+
+        const starPoints = [
+            [3, 3], [3, 7], [3, 11],
+            [7, 3], [7, 7], [7, 11],
+            [11, 3], [11, 7], [11, 11]
+        ];
+
+        function initBoard() {
+            board = Array(BOARD_SIZE).fill(null).map(() => Array(BOARD_SIZE).fill(EMPTY));
+            currentPlayer = BLACK;
+            gameOver = false;
+            moveCount = 0;
+            
+            const boardElement = document.getElementById('board');
+            boardElement.innerHTML = '';
+            
+            for (let i = 0; i < BOARD_SIZE; i++) {
+                for (let j = 0; j < BOARD_SIZE; j++) {
+                    const cell = document.createElement('div');
+                    cell.className = 'cell';
+                    cell.dataset.row = i;
+                    cell.dataset.col = j;
+                    
+                    if (starPoints.some(p => p[0] === i && p[1] === j)) {
+                        cell.classList.add('star');
+                    }
+                    
+                    cell.addEventListener('click', () => handleClick(i, j));
+                    boardElement.appendChild(cell);
+                }
+            }
+            
+            updateStatus();
+        }
+
+        function handleClick(row, col) {
+            if (gameOver || board[row][col] !== EMPTY) {
+                return;
+            }
+            
+            board[row][col] = currentPlayer;
+            moveCount++;
+            
+            const cell = document.querySelector(`.cell[data-row="${row}"][data-col="${col}"]`);
+            cell.classList.add('occupied');
+            
+            const stone = document.createElement('div');
+            stone.className = `stone ${currentPlayer === BLACK ? 'black' : 'white'}`;
+            cell.appendChild(stone);
+            
+            if (checkWin(row, col)) {
+                gameOver = true;
+                const winner = currentPlayer === BLACK ? '黑方' : '白方';
+                showWinner(`${winner}获胜!`);
+                return;
+            }
+            
+            if (moveCount === BOARD_SIZE * BOARD_SIZE) {
+                gameOver = true;
+                showWinner('平局!');
+                return;
+            }
+            
+            currentPlayer = currentPlayer === BLACK ? WHITE : BLACK;
+            updateStatus();
+        }
+
+        function checkWin(row, col) {
+            const directions = [
+                [[0, 1], [0, -1]],
+                [[1, 0], [-1, 0]],
+                [[1, 1], [-1, -1]],
+                [[1, -1], [-1, 1]]
+            ];
+            
+            const player = board[row][col];
+            
+            for (const [dir1, dir2] of directions) {
+                let count = 1;
+                
+                count += countInDirection(row, col, dir1[0], dir1[1], player);
+                count += countInDirection(row, col, dir2[0], dir2[1], player);
+                
+                if (count >= 5) {
+                    return true;
+                }
+            }
+            
+            return false;
+        }
+
+        function countInDirection(row, col, dRow, dCol, player) {
+            let count = 0;
+            let r = row + dRow;
+            let c = col + dCol;
+            
+            while (r >= 0 && r < BOARD_SIZE && c >= 0 && c < BOARD_SIZE && board[r][c] === player) {
+                count++;
+                r += dRow;
+                c += dCol;
+            }
+            
+            return count;
+        }
+
+        function updateStatus() {
+            const status = document.getElementById('status');
+            status.textContent = currentPlayer === BLACK ? '黑方执子' : '白方执子';
+            status.style.background = currentPlayer === BLACK ? '#333' : '#f0f0f0';
+            status.style.color = currentPlayer === BLACK ? '#fff' : '#333';
+        }
+
+        function showWinner(text) {
+            document.getElementById('winnerText').textContent = text;
+            document.getElementById('winnerOverlay').classList.add('show');
+        }
+
+        function closeWinnerModal() {
+            document.getElementById('winnerOverlay').classList.remove('show');
+            restartGame();
+        }
+
+        function restartGame() {
+            initBoard();
+        }
+
+        initBoard();
+    </script>
+</body>
+</html>
