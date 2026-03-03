@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>贪吃蛇</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap');
@@ -11,6 +11,7 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
         }
         
         body {
@@ -22,12 +23,13 @@
             background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
             font-family: 'Orbitron', sans-serif;
             padding: 20px;
+            touch-action: manipulation;
         }
         
         h1 {
             color: #e94560;
-            font-size: 2.5rem;
-            margin-bottom: 20px;
+            font-size: 2rem;
+            margin-bottom: 15px;
             text-shadow: 0 0 20px rgba(233, 69, 96, 0.5);
             letter-spacing: 4px;
         }
@@ -35,7 +37,7 @@
         .game-container {
             background: rgba(255, 255, 255, 0.05);
             border-radius: 16px;
-            padding: 20px;
+            padding: 15px;
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3),
                         inset 0 1px 0 rgba(255, 255, 255, 0.1);
             border: 1px solid rgba(255, 255, 255, 0.1);
@@ -45,15 +47,15 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 15px;
-            padding: 10px 15px;
+            margin-bottom: 10px;
+            padding: 8px 12px;
             background: rgba(0, 0, 0, 0.3);
             border-radius: 8px;
         }
         
         .score {
             color: #00ff88;
-            font-size: 1.2rem;
+            font-size: 1rem;
             text-shadow: 0 0 10px rgba(0, 255, 136, 0.5);
         }
         
@@ -64,7 +66,7 @@
         
         .high-score {
             color: #ffd700;
-            font-size: 0.9rem;
+            font-size: 0.8rem;
             text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
         }
         
@@ -73,19 +75,20 @@
             border-radius: 8px;
             background: linear-gradient(180deg, #0a0a0a 0%, #1a1a1a 100%);
             box-shadow: inset 0 0 50px rgba(0, 0, 0, 0.5);
+            max-width: 100%;
         }
         
         .controls {
-            margin-top: 15px;
+            margin-top: 10px;
             display: flex;
-            gap: 10px;
+            gap: 8px;
             justify-content: center;
         }
         
         button {
-            padding: 12px 30px;
+            padding: 10px 25px;
             font-family: 'Orbitron', sans-serif;
-            font-size: 0.9rem;
+            font-size: 0.8rem;
             border: none;
             border-radius: 8px;
             cursor: pointer;
@@ -122,6 +125,78 @@
             transform: none !important;
         }
         
+        /* Virtual D-Pad for mobile */
+        .dpad-container {
+            display: none;
+            margin-top: 20px;
+            position: relative;
+            width: 150px;
+            height: 150px;
+        }
+        
+        @media (max-width: 768px), (hover: none) {
+            .dpad-container {
+                display: block;
+            }
+        }
+        
+        .dpad-btn {
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: #00ff88;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            user-select: none;
+        }
+        
+        .dpad-btn:active {
+            background: rgba(0, 255, 136, 0.3);
+            border-color: #00ff88;
+            transform: scale(0.95);
+        }
+        
+        .dpad-up {
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        
+        .dpad-down {
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        
+        .dpad-left {
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+        
+        .dpad-right {
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+        
+        .dpad-center {
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(233, 69, 96, 0.2);
+            border-color: rgba(233, 69, 96, 0.4);
+            font-size: 1rem;
+            color: #e94560;
+        }
+        
         .game-over-overlay {
             position: fixed;
             top: 0;
@@ -146,7 +221,7 @@
         
         .game-over-text {
             color: #e94560;
-            font-size: 3rem;
+            font-size: 2.5rem;
             margin-bottom: 20px;
             text-shadow: 0 0 30px rgba(233, 69, 96, 0.8);
             animation: pulse 1s ease-in-out infinite;
@@ -159,41 +234,69 @@
         
         .final-score {
             color: #fff;
-            font-size: 1.5rem;
+            font-size: 1.2rem;
             margin-bottom: 30px;
         }
         
         .instructions {
-            margin-top: 15px;
+            margin-top: 10px;
             color: rgba(255, 255, 255, 0.5);
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             text-align: center;
             letter-spacing: 1px;
+        }
+        
+        .back-btn {
+            position: fixed;
+            top: 15px;
+            left: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            padding: 8px 15px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-size: 0.75rem;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
         }
     </style>
 </head>
 <body>
+    <a href="index.html" class="back-btn">← 返回</a>
+    
     <h1>SNAKE</h1>
     
     <div class="game-container">
         <div class="info-bar">
             <div class="score">分数: <span id="score">0</span></div>
-            <div class="high-score">最高分: <span id="highScore">0</span></div>
+            <div class="high-score">最高: <span id="highScore">0</span></div>
         </div>
         
         <canvas id="gameCanvas" width="400" height="400"></canvas>
         
         <div class="controls">
-            <button class="btn-start" id="startBtn">开始游戏</button>
-            <button class="btn-reset" id="resetBtn">重新开始</button>
+            <button class="btn-start" id="startBtn">开始</button>
+            <button class="btn-reset" id="resetBtn">重置</button>
         </div>
         
-        <div class="instructions">使用方向键 ↑ ↓ ← → 控制蛇的移动</div>
+        <!-- Virtual D-Pad for mobile -->
+        <div class="dpad-container" id="dpad">
+            <div class="dpad-btn dpad-up" data-dir="up">↑</div>
+            <div class="dpad-btn dpad-down" data-dir="down">↓</div>
+            <div class="dpad-btn dpad-left" data-dir="left">←</div>
+            <div class="dpad-btn dpad-right" data-dir="right">→</div>
+        </div>
+        
+        <div class="instructions">键盘方向键 或 触屏虚拟按键控制</div>
     </div>
     
     <div class="game-over-overlay" id="gameOverOverlay">
         <div class="game-over-text">游戏结束</div>
-        <div class="final-score">最终得分: <span id="finalScore">0</span></div>
+        <div class="final-score">得分: <span id="finalScore">0</span></div>
         <button class="btn-start" id="playAgainBtn">再来一局</button>
     </div>
 
@@ -207,6 +310,7 @@
         const resetBtn = document.getElementById('resetBtn');
         const playAgainBtn = document.getElementById('playAgainBtn');
         const gameOverOverlay = document.getElementById('gameOverOverlay');
+        const dpad = document.getElementById('dpad');
         
         const GRID_SIZE = 20;
         const TILE_COUNT = canvas.width / GRID_SIZE;
@@ -384,34 +488,71 @@
             initGame();
         }
         
-        document.addEventListener('keydown', (e) => {
+        function handleDirection(dir) {
             if (!isRunning) return;
             
-            switch (e.key) {
-                case 'ArrowUp':
-                    if (direction.y !== 1) {
-                        nextDirection = { x: 0, y: -1 };
-                    }
-                    e.preventDefault();
+            switch (dir) {
+                case 'up':
+                    if (direction.y !== 1) nextDirection = { x: 0, y: -1 };
                     break;
-                case 'ArrowDown':
-                    if (direction.y !== -1) {
-                        nextDirection = { x: 0, y: 1 };
-                    }
-                    e.preventDefault();
+                case 'down':
+                    if (direction.y !== -1) nextDirection = { x: 0, y: 1 };
                     break;
-                case 'ArrowLeft':
-                    if (direction.x !== 1) {
-                        nextDirection = { x: -1, y: 0 };
-                    }
-                    e.preventDefault();
+                case 'left':
+                    if (direction.x !== 1) nextDirection = { x: -1, y: 0 };
                     break;
-                case 'ArrowRight':
-                    if (direction.x !== -1) {
-                        nextDirection = { x: 1, y: 0 };
-                    }
-                    e.preventDefault();
+                case 'right':
+                    if (direction.x !== -1) nextDirection = { x: 1, y: 0 };
                     break;
+            }
+        }
+        
+        // Keyboard controls
+        document.addEventListener('keydown', (e) => {
+            const keyMap = {
+                'ArrowUp': 'up',
+                'ArrowDown': 'down',
+                'ArrowLeft': 'left',
+                'ArrowRight': 'right'
+            };
+            
+            if (keyMap[e.key]) {
+                handleDirection(keyMap[e.key]);
+                e.preventDefault();
+            }
+        });
+        
+        // Touch controls - D-Pad
+        dpad.querySelectorAll('.dpad-btn').forEach(btn => {
+            btn.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                handleDirection(btn.dataset.dir);
+            });
+            
+            btn.addEventListener('click', (e) => {
+                handleDirection(btn.dataset.dir);
+            });
+        });
+        
+        // Swipe controls on canvas
+        let touchStartX = 0;
+        let touchStartY = 0;
+        
+        canvas.addEventListener('touchstart', (e) => {
+            touchStartX = e.touches[0].clientX;
+            touchStartY = e.touches[0].clientY;
+        });
+        
+        canvas.addEventListener('touchend', (e) => {
+            const dx = e.changedTouches[0].clientX - touchStartX;
+            const dy = e.changedTouches[0].clientY - touchStartY;
+            
+            if (Math.abs(dx) > 30 || Math.abs(dy) > 30) {
+                if (Math.abs(dx) > Math.abs(dy)) {
+                    handleDirection(dx > 0 ? 'right' : 'left');
+                } else {
+                    handleDirection(dy > 0 ? 'down' : 'up');
+                }
             }
         });
         
