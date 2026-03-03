@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>扫雷</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap');
@@ -11,6 +11,7 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
         }
         
         body {
@@ -22,12 +23,13 @@
             background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
             font-family: 'Orbitron', sans-serif;
             padding: 20px;
+            touch-action: manipulation;
         }
         
         h1 {
             color: #e94560;
-            font-size: 2.5rem;
-            margin-bottom: 20px;
+            font-size: 2rem;
+            margin-bottom: 15px;
             text-shadow: 0 0 20px rgba(233, 69, 96, 0.5);
             letter-spacing: 4px;
         }
@@ -35,7 +37,7 @@
         .game-container {
             background: rgba(255, 255, 255, 0.05);
             border-radius: 16px;
-            padding: 20px;
+            padding: 15px;
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3),
                         inset 0 1px 0 rgba(255, 255, 255, 0.1);
             border: 1px solid rgba(255, 255, 255, 0.1);
@@ -45,27 +47,27 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 15px;
-            padding: 10px 15px;
+            margin-bottom: 10px;
+            padding: 8px 12px;
             background: rgba(0, 0, 0, 0.3);
             border-radius: 8px;
-            gap: 20px;
+            gap: 15px;
         }
         
         .stat {
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
         }
         
         .stat-label {
             color: rgba(255, 255, 255, 0.7);
-            font-size: 0.9rem;
+            font-size: 0.8rem;
         }
         
         .stat-value {
             color: #00ff88;
-            font-size: 1.2rem;
+            font-size: 1rem;
             font-weight: 700;
             text-shadow: 0 0 10px rgba(0, 255, 136, 0.5);
         }
@@ -82,18 +84,18 @@
         
         .difficulty-bar {
             display: flex;
-            gap: 10px;
-            margin-bottom: 15px;
+            gap: 8px;
+            margin-bottom: 10px;
         }
         
         .diff-btn {
-            padding: 8px 16px;
+            padding: 6px 12px;
             background: rgba(255, 255, 255, 0.1);
             border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 8px;
+            border-radius: 6px;
             color: #fff;
             font-family: 'Orbitron', sans-serif;
-            font-size: 0.8rem;
+            font-size: 0.7rem;
             cursor: pointer;
             transition: all 0.3s ease;
         }
@@ -110,8 +112,9 @@
         .grid-container {
             background: #1a1a2e;
             border-radius: 8px;
-            padding: 10px;
+            padding: 8px;
             box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.5);
+            overflow-x: auto;
         }
         
         .grid {
@@ -120,19 +123,20 @@
         }
         
         .cell {
-            width: 30px;
-            height: 30px;
+            width: 28px;
+            height: 28px;
             background: linear-gradient(135deg, #2a2a4e 0%, #1a1a3e 100%);
             border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 4px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             font-weight: 700;
             cursor: pointer;
             transition: all 0.15s ease;
             user-select: none;
+            -webkit-user-select: none;
         }
         
         .cell:hover:not(.revealed):not(.flagged) {
@@ -177,22 +181,22 @@
         .cell[data-num="8"] { color: #ecf0f1; text-shadow: 0 0 5px rgba(236, 240, 241, 0.5); }
         
         .controls {
-            margin-top: 15px;
+            margin-top: 10px;
             display: flex;
-            gap: 10px;
+            gap: 8px;
             justify-content: center;
         }
         
         button {
-            padding: 12px 30px;
+            padding: 10px 20px;
             font-family: 'Orbitron', sans-serif;
-            font-size: 0.9rem;
+            font-size: 0.8rem;
             border: none;
             border-radius: 8px;
             cursor: pointer;
             transition: all 0.3s ease;
             text-transform: uppercase;
-            letter-spacing: 2px;
+            letter-spacing: 1px;
         }
         
         .btn-start {
@@ -201,20 +205,10 @@
             box-shadow: 0 4px 15px rgba(0, 255, 136, 0.3);
         }
         
-        .btn-start:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(0, 255, 136, 0.5);
-        }
-        
         .btn-reset {
             background: linear-gradient(135deg, #e94560 0%, #c73e54 100%);
             color: #fff;
             box-shadow: 0 4px 15px rgba(233, 69, 96, 0.3);
-        }
-        
-        .btn-reset:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(233, 69, 96, 0.5);
         }
         
         .game-over-overlay {
@@ -240,8 +234,8 @@
         }
         
         .game-over-text {
-            font-size: 3rem;
-            margin-bottom: 20px;
+            font-size: 2rem;
+            margin-bottom: 15px;
             text-shadow: 0 0 30px currentColor;
             animation: pulse 1s ease-in-out infinite;
         }
@@ -261,29 +255,29 @@
         
         .final-stats {
             color: #fff;
-            font-size: 1.2rem;
-            margin-bottom: 30px;
+            font-size: 1rem;
+            margin-bottom: 20px;
             text-align: center;
         }
         
         .instructions {
-            margin-top: 15px;
+            margin-top: 10px;
             color: rgba(255, 255, 255, 0.5);
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             text-align: center;
             letter-spacing: 1px;
         }
         
         .back-btn {
             position: fixed;
-            top: 20px;
-            left: 20px;
+            top: 15px;
+            left: 15px;
             background: rgba(255, 255, 255, 0.1);
             color: #fff;
-            padding: 10px 20px;
+            padding: 8px 15px;
             border-radius: 8px;
             text-decoration: none;
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             transition: all 0.3s ease;
             border: 1px solid rgba(255, 255, 255, 0.2);
         }
@@ -294,13 +288,20 @@
         
         .best-time {
             color: rgba(255, 255, 255, 0.6);
-            font-size: 0.8rem;
-            margin-top: 10px;
+            font-size: 0.75rem;
+            margin-top: 8px;
+        }
+        
+        /* Touch hint */
+        .touch-hint {
+            color: rgba(255, 255, 255, 0.4);
+            font-size: 0.65rem;
+            margin-top: 5px;
         }
     </style>
 </head>
 <body>
-    <a href="index.html" class="back-btn">← 返回游戏中心</a>
+    <a href="index.html" class="back-btn">← 返回</a>
     
     <h1>MINESWEEPER</h1>
     
@@ -335,10 +336,7 @@
         </div>
         
         <div class="best-time" id="bestTime"></div>
-        
-        <div class="instructions">
-            左键翻开 | 右键插旗 | 找出所有地雷！
-        </div>
+        <div class="touch-hint">点按翻开 | 长按插旗</div>
     </div>
     
     <div class="game-over-overlay" id="gameOverOverlay">
@@ -377,6 +375,11 @@
         let timer = 0;
         let timerInterval = null;
         let flagCount = 0;
+        
+        // Touch handling for long press
+        let longPressTimer = null;
+        let isLongPress = false;
+        const LONG_PRESS_DURATION = 500; // ms
         
         // Load best times
         let bestTimes = JSON.parse(localStorage.getItem('minesweeperBestTimes') || '{}');
@@ -462,7 +465,7 @@
         
         function renderGrid() {
             gridEl.innerHTML = '';
-            gridEl.style.gridTemplateColumns = `repeat(${cols}, 30px)`;
+            gridEl.style.gridTemplateColumns = `repeat(${cols}, 28px)`;
             
             for (let i = 0; i < rows; i++) {
                 for (let j = 0; j < cols; j++) {
@@ -485,10 +488,47 @@
                         cell.textContent = '🚩';
                     }
                     
-                    cell.addEventListener('click', () => handleClick(i, j));
+                    // Mouse events
+                    cell.addEventListener('click', (e) => {
+                        if (!isLongPress) {
+                            handleClick(i, j);
+                        }
+                    });
+                    
                     cell.addEventListener('contextmenu', (e) => {
                         e.preventDefault();
                         handleRightClick(i, j);
+                    });
+                    
+                    // Touch events for long press (flag)
+                    cell.addEventListener('touchstart', (e) => {
+                        isLongPress = false;
+                        longPressTimer = setTimeout(() => {
+                            isLongPress = true;
+                            handleRightClick(i, j);
+                            // Haptic feedback if available
+                            if (navigator.vibrate) {
+                                navigator.vibrate(50);
+                            }
+                        }, LONG_PRESS_DURATION);
+                    });
+                    
+                    cell.addEventListener('touchend', (e) => {
+                        if (longPressTimer) {
+                            clearTimeout(longPressTimer);
+                            longPressTimer = null;
+                        }
+                        if (!isLongPress) {
+                            handleClick(i, j);
+                        }
+                        e.preventDefault();
+                    });
+                    
+                    cell.addEventListener('touchmove', (e) => {
+                        if (longPressTimer) {
+                            clearTimeout(longPressTimer);
+                            longPressTimer = null;
+                        }
                     });
                     
                     gridEl.appendChild(cell);
@@ -628,7 +668,7 @@
         function updateBestTimeDisplay() {
             const key = `${currentDiff}_time`;
             if (bestTimes[key]) {
-                bestTimeEl.textContent = `🏆 最佳时间: ${bestTimes[key]} 秒`;
+                bestTimeEl.textContent = `🏆 最佳: ${bestTimes[key]}秒`;
             } else {
                 bestTimeEl.textContent = '';
             }
