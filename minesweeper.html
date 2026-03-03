@@ -22,13 +22,13 @@
             justify-content: center;
             background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
             font-family: 'Orbitron', sans-serif;
-            padding: 20px;
+            padding: 10px;
             touch-action: manipulation;
         }
         
         h1 {
             color: #e94560;
-            font-size: 2rem;
+            font-size: 1.8rem;
             margin-bottom: 15px;
             text-shadow: 0 0 20px rgba(233, 69, 96, 0.5);
             letter-spacing: 4px;
@@ -38,54 +38,17 @@
             background: rgba(255, 255, 255, 0.05);
             border-radius: 16px;
             padding: 15px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3),
-                        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
             border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        
-        .info-bar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 10px;
-            padding: 8px 12px;
-            background: rgba(0, 0, 0, 0.3);
-            border-radius: 8px;
-            gap: 15px;
-        }
-        
-        .stat {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-        
-        .stat-label {
-            color: rgba(255, 255, 255, 0.7);
-            font-size: 0.8rem;
-        }
-        
-        .stat-value {
-            color: #00ff88;
-            font-size: 1rem;
-            font-weight: 700;
-            text-shadow: 0 0 10px rgba(0, 255, 136, 0.5);
-        }
-        
-        .stat-value.mine {
-            color: #e94560;
-            text-shadow: 0 0 10px rgba(233, 69, 96, 0.5);
-        }
-        
-        .stat-value.time {
-            color: #ffd700;
-            text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+            width: 100%;
+            max-width: 500px;
         }
         
         .difficulty-bar {
             display: flex;
             gap: 8px;
             margin-bottom: 10px;
+            justify-content: center;
         }
         
         .diff-btn {
@@ -100,7 +63,7 @@
             transition: all 0.3s ease;
         }
         
-        .diff-btn:hover {
+        .diff-btn:hover, .diff-btn:active {
             background: rgba(255, 255, 255, 0.2);
         }
         
@@ -109,17 +72,56 @@
             border-color: transparent;
         }
         
+        .info-bar {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            margin-bottom: 10px;
+            padding: 8px 12px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+        }
+        
+        .stat {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .stat-label {
+            font-size: 1rem;
+        }
+        
+        .stat-value {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #00ff88;
+            text-shadow: 0 0 10px rgba(0, 255, 136, 0.5);
+        }
+        
+        .stat-value.mine {
+            color: #e94560;
+            text-shadow: 0 0 10px rgba(233, 69, 96, 0.5);
+        }
+        
+        .stat-value.time {
+            color: #ffd700;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+        }
+        
         .grid-container {
             background: #1a1a2e;
             border-radius: 8px;
             padding: 8px;
             box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.5);
             overflow-x: auto;
+            display: flex;
+            justify-content: center;
         }
         
         .grid {
             display: grid;
-            gap: 2px;
+            gap: 1px;
         }
         
         .cell {
@@ -127,21 +129,20 @@
             height: 28px;
             background: linear-gradient(135deg, #2a2a4e 0%, #1a1a3e 100%);
             border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 4px;
+            border-radius: 3px;
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 0.85rem;
             font-weight: 700;
             cursor: pointer;
-            transition: all 0.15s ease;
+            transition: all 0.1s ease;
             user-select: none;
             -webkit-user-select: none;
         }
         
         .cell:hover:not(.revealed):not(.flagged) {
             background: linear-gradient(135deg, #3a3a5e 0%, #2a2a4e 100%);
-            box-shadow: 0 0 10px rgba(102, 126, 234, 0.3);
         }
         
         .cell.revealed {
@@ -151,12 +152,10 @@
         
         .cell.mine {
             background: linear-gradient(135deg, #e94560 0%, #c73e54 100%);
-            box-shadow: 0 0 15px rgba(233, 69, 96, 0.5);
         }
         
         .cell.flagged {
             background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
-            box-shadow: 0 0 10px rgba(243, 156, 18, 0.5);
         }
         
         .cell.exploded {
@@ -171,14 +170,14 @@
         }
         
         /* Number colors */
-        .cell[data-num="1"] { color: #3498db; text-shadow: 0 0 5px rgba(52, 152, 219, 0.5); }
-        .cell[data-num="2"] { color: #2ecc71; text-shadow: 0 0 5px rgba(46, 204, 113, 0.5); }
-        .cell[data-num="3"] { color: #e74c3c; text-shadow: 0 0 5px rgba(231, 76, 60, 0.5); }
-        .cell[data-num="4"] { color: #9b59b6; text-shadow: 0 0 5px rgba(155, 89, 182, 0.5); }
-        .cell[data-num="5"] { color: #f39c12; text-shadow: 0 0 5px rgba(243, 156, 18, 0.5); }
-        .cell[data-num="6"] { color: #1abc9c; text-shadow: 0 0 5px rgba(26, 188, 156, 0.5); }
-        .cell[data-num="7"] { color: #e67e22; text-shadow: 0 0 5px rgba(230, 126, 34, 0.5); }
-        .cell[data-num="8"] { color: #ecf0f1; text-shadow: 0 0 5px rgba(236, 240, 241, 0.5); }
+        .cell[data-num="1"] { color: #3498db; }
+        .cell[data-num="2"] { color: #2ecc71; }
+        .cell[data-num="3"] { color: #e74c3c; }
+        .cell[data-num="4"] { color: #9b59b6; }
+        .cell[data-num="5"] { color: #f39c12; }
+        .cell[data-num="6"] { color: #1abc9c; }
+        .cell[data-num="7"] { color: #e67e22; }
+        .cell[data-num="8"] { color: #ecf0f1; }
         
         .controls {
             margin-top: 10px;
@@ -192,7 +191,7 @@
             font-family: 'Orbitron', sans-serif;
             font-size: 0.8rem;
             border: none;
-            border-radius: 8px;
+            border-radius: 6px;
             cursor: pointer;
             transition: all 0.3s ease;
             text-transform: uppercase;
@@ -202,13 +201,11 @@
         .btn-start {
             background: linear-gradient(135deg, #00ff88 0%, #00cc6a 100%);
             color: #1a1a2e;
-            box-shadow: 0 4px 15px rgba(0, 255, 136, 0.3);
         }
         
         .btn-reset {
             background: linear-gradient(135deg, #e94560 0%, #c73e54 100%);
             color: #fff;
-            box-shadow: 0 4px 15px rgba(233, 69, 96, 0.3);
         }
         
         .game-over-overlay {
@@ -234,24 +231,13 @@
         }
         
         .game-over-text {
-            font-size: 2rem;
+            font-size: 2.5rem;
             margin-bottom: 15px;
             text-shadow: 0 0 30px currentColor;
-            animation: pulse 1s ease-in-out infinite;
         }
         
-        .game-over-text.win {
-            color: #00ff88;
-        }
-        
-        .game-over-text.lose {
-            color: #e94560;
-        }
-        
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-        }
+        .game-over-text.win { color: #00ff88; }
+        .game-over-text.lose { color: #e94560; }
         
         .final-stats {
             color: #fff;
@@ -263,40 +249,36 @@
         .instructions {
             margin-top: 10px;
             color: rgba(255, 255, 255, 0.5);
-            font-size: 0.7rem;
+            font-size: 0.65rem;
             text-align: center;
-            letter-spacing: 1px;
         }
         
         .back-btn {
             position: fixed;
-            top: 15px;
-            left: 15px;
+            top: 10px;
+            left: 10px;
             background: rgba(255, 255, 255, 0.1);
             color: #fff;
-            padding: 8px 15px;
-            border-radius: 8px;
+            padding: 8px 12px;
+            border-radius: 6px;
             text-decoration: none;
-            font-size: 0.75rem;
-            transition: all 0.3s ease;
+            font-size: 0.7rem;
             border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-        
-        .back-btn:hover {
-            background: rgba(255, 255, 255, 0.2);
         }
         
         .best-time {
             color: rgba(255, 255, 255, 0.6);
             font-size: 0.75rem;
             margin-top: 8px;
+            text-align: center;
         }
-        
+
         /* Touch hint */
         .touch-hint {
             color: rgba(255, 255, 255, 0.4);
-            font-size: 0.65rem;
+            font-size: 0.6rem;
             margin-top: 5px;
+            text-align: center;
         }
     </style>
 </head>
@@ -331,12 +313,13 @@
         </div>
         
         <div class="controls">
-            <button class="btn-start" id="startBtn">开始游戏</button>
-            <button class="btn-reset" id="resetBtn">重新开始</button>
+            <button class="btn-start" id="startBtn">开始</button>
+            <button class="btn-reset" id="resetBtn">重置</button>
         </div>
         
+        <div class="touch-hint">点击翻开 | 长按插旗</div>
+        
         <div class="best-time" id="bestTime"></div>
-        <div class="touch-hint">点按翻开 | 长按插旗</div>
     </div>
     
     <div class="game-over-overlay" id="gameOverOverlay">
@@ -375,13 +358,9 @@
         let timer = 0;
         let timerInterval = null;
         let flagCount = 0;
-        
-        // Touch handling for long press
         let longPressTimer = null;
-        let isLongPress = false;
-        const LONG_PRESS_DURATION = 500; // ms
+        let longPressDelay = 500; // ms
         
-        // Load best times
         let bestTimes = JSON.parse(localStorage.getItem('minesweeperBestTimes') || '{}');
         
         function initGame() {
@@ -404,7 +383,6 @@
                 timerInterval = null;
             }
             
-            // Initialize arrays
             for (let i = 0; i < rows; i++) {
                 grid[i] = [];
                 revealed[i] = [];
@@ -429,7 +407,6 @@
                 const r = Math.floor(Math.random() * rows);
                 const c = Math.floor(Math.random() * cols);
                 
-                // Don't place mine on first click or adjacent cells
                 const isNearFirst = Math.abs(r - firstRow) <= 1 && Math.abs(c - firstCol) <= 1;
                 
                 if (grid[r][c] !== -1 && !isNearFirst) {
@@ -439,7 +416,6 @@
                 }
             }
             
-            // Calculate numbers
             for (let i = 0; i < rows; i++) {
                 for (let j = 0; j < cols; j++) {
                     if (grid[i][j] === -1) continue;
@@ -489,12 +465,7 @@
                     }
                     
                     // Mouse events
-                    cell.addEventListener('click', (e) => {
-                        if (!isLongPress) {
-                            handleClick(i, j);
-                        }
-                    });
-                    
+                    cell.addEventListener('click', () => handleClick(i, j));
                     cell.addEventListener('contextmenu', (e) => {
                         e.preventDefault();
                         handleRightClick(i, j);
@@ -502,37 +473,40 @@
                     
                     // Touch events for long press (flag)
                     cell.addEventListener('touchstart', (e) => {
-                        isLongPress = false;
-                        longPressTimer = setTimeout(() => {
-                            isLongPress = true;
-                            handleRightClick(i, j);
-                            // Haptic feedback if available
-                            if (navigator.vibrate) {
-                                navigator.vibrate(50);
-                            }
-                        }, LONG_PRESS_DURATION);
-                    });
+                        e.preventDefault();
+                        handleTouchStart(i, j, e);
+                    }, { passive: false });
                     
                     cell.addEventListener('touchend', (e) => {
-                        if (longPressTimer) {
-                            clearTimeout(longPressTimer);
-                            longPressTimer = null;
-                        }
-                        if (!isLongPress) {
-                            handleClick(i, j);
-                        }
-                        e.preventDefault();
+                        handleTouchEnd(i, j, e);
                     });
                     
-                    cell.addEventListener('touchmove', (e) => {
-                        if (longPressTimer) {
-                            clearTimeout(longPressTimer);
-                            longPressTimer = null;
-                        }
+                    cell.addEventListener('touchmove', () => {
+                        clearTimeout(longPressTimer);
+                        longPressTimer = null;
                     });
                     
                     gridEl.appendChild(cell);
                 }
+            }
+        }
+        
+        function handleTouchStart(row, col, e) {
+            longPressTimer = setTimeout(() => {
+                // Long press = flag
+                if (!gameOver && !revealed[row][col]) {
+                    handleRightClick(row, col);
+                }
+                longPressTimer = null;
+            }, longPressDelay);
+        }
+        
+        function handleTouchEnd(row, col, e) {
+            if (longPressTimer) {
+                // Short tap = reveal
+                clearTimeout(longPressTimer);
+                longPressTimer = null;
+                handleClick(row, col);
             }
         }
         
@@ -566,13 +540,11 @@
             
             revealed[row][col] = true;
             
-            // Hit a mine
             if (grid[row][col] === -1) {
                 endGame(false, row, col);
                 return;
             }
             
-            // Auto-reveal for empty cells
             if (grid[row][col] === 0) {
                 for (let di = -1; di <= 1; di++) {
                     for (let dj = -1; dj <= 1; dj++) {
@@ -603,25 +575,12 @@
             gameOver = true;
             stopTimer();
             
-            // Reveal all mines
             if (!won) {
                 mineLocations.forEach(({ r, c }) => {
                     revealed[r][c] = true;
                 });
-                
-                // Mark exploded mine
-                if (explodedRow >= 0) {
-                    const cells = gridEl.querySelectorAll('.cell');
-                    cells.forEach(cell => {
-                        if (parseInt(cell.dataset.row) === explodedRow && 
-                            parseInt(cell.dataset.col) === explodedCol) {
-                            cell.classList.add('exploded');
-                        }
-                    });
-                }
             }
             
-            // Save best time
             if (won) {
                 const key = `${currentDiff}_time`;
                 if (!bestTimes[key] || timer < bestTimes[key]) {
@@ -630,13 +589,9 @@
                 }
             }
             
-            // Show overlay
-            gameOverText.textContent = won ? '🎉 你赢了！' : '💥 游戏结束';
+            gameOverText.textContent = won ? '🎉 胜利!' : '💥 失败';
             gameOverText.className = 'game-over-text ' + (won ? 'win' : 'lose');
-            finalStats.innerHTML = `
-                时间: ${timer} 秒<br>
-                难度: ${currentDiff === 'easy' ? '初级' : '中级'}
-            `;
+            finalStats.innerHTML = `时间: ${timer}秒 | ${currentDiff === 'easy' ? '初级' : '中级'}`;
             gameOverOverlay.classList.add('show');
             
             renderGrid();
@@ -674,7 +629,6 @@
             }
         }
         
-        // Event listeners
         startBtn.addEventListener('click', () => {
             initGame();
             startBtn.disabled = true;
@@ -683,7 +637,6 @@
         resetBtn.addEventListener('click', () => {
             gameOverOverlay.classList.remove('show');
             initGame();
-            startBtn.disabled = true;
         });
         
         playAgainBtn.addEventListener('click', () => {
@@ -700,7 +653,6 @@
             });
         });
         
-        // Initialize
         initGame();
     </script>
 </body>
