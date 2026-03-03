@@ -41,6 +41,9 @@
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3),
                         inset 0 1px 0 rgba(255, 255, 255, 0.1);
             border: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
         
         .info-bar {
@@ -51,6 +54,7 @@
             padding: 8px 12px;
             background: rgba(0, 0, 0, 0.3);
             border-radius: 8px;
+            width: 100%;
         }
         
         .score {
@@ -68,6 +72,12 @@
             color: #ffd700;
             font-size: 0.8rem;
             text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+        }
+        
+        .speed-indicator {
+            color: #3498db;
+            font-size: 0.8rem;
+            text-shadow: 0 0 10px rgba(52, 152, 219, 0.5);
         }
         
         canvas {
@@ -125,7 +135,7 @@
             transform: none !important;
         }
         
-        /* Virtual D-Pad for mobile */
+        /* Virtual D-Pad for mobile - centered */
         .dpad-container {
             display: none;
             margin-top: 20px;
@@ -187,14 +197,20 @@
             transform: translateY(-50%);
         }
         
-        .dpad-center {
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: rgba(233, 69, 96, 0.2);
-            border-color: rgba(233, 69, 96, 0.4);
-            font-size: 1rem;
-            color: #e94560;
+        .dpad-btn:active.dpad-up {
+            transform: translateX(-50%) scale(0.95);
+        }
+        
+        .dpad-btn:active.dpad-down {
+            transform: translateX(-50%) scale(0.95);
+        }
+        
+        .dpad-btn:active.dpad-left {
+            transform: translateY(-50%) scale(0.95);
+        }
+        
+        .dpad-btn:active.dpad-right {
+            transform: translateY(-50%) scale(0.95);
         }
         
         .game-over-overlay {
@@ -273,6 +289,7 @@
     <div class="game-container">
         <div class="info-bar">
             <div class="score">分数: <span id="score">0</span></div>
+            <div class="speed-indicator">速度: <span id="speed">1</span></div>
             <div class="high-score">最高: <span id="highScore">0</span></div>
         </div>
         
@@ -283,7 +300,7 @@
             <button class="btn-reset" id="resetBtn">重置</button>
         </div>
         
-        <!-- Virtual D-Pad for mobile -->
+        <!-- Virtual D-Pad for mobile - centered -->
         <div class="dpad-container" id="dpad">
             <div class="dpad-btn dpad-up" data-dir="up">↑</div>
             <div class="dpad-btn dpad-down" data-dir="down">↓</div>
@@ -304,6 +321,7 @@
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
         const scoreEl = document.getElementById('score');
+        const speedEl = document.getElementById('speed');
         const highScoreEl = document.getElementById('highScore');
         const finalScoreEl = document.getElementById('finalScore');
         const startBtn = document.getElementById('startBtn');
@@ -315,6 +333,11 @@
         const GRID_SIZE = 20;
         const TILE_COUNT = canvas.width / GRID_SIZE;
         
+        // Speed settings: start slow, speed up with food
+        const BASE_SPEED = 200; // Initial interval (ms) - slower start
+        const MIN_SPEED = 50;   // Fastest speed
+        const SPEED_DECREASE = 5; // How much faster per food
+        
         let snake = [];
         let food = { x: 0, y: 0 };
         let direction = { x: 0, y: 0 };
@@ -323,6 +346,7 @@
         let highScore = localStorage.getItem('snakeHighScore') || 0;
         let gameLoop = null;
         let isRunning = false;
+        let currentSpeed = BASE_SPEED;
         
         highScoreEl.textContent = highScore;
         
@@ -335,7 +359,9 @@
             direction = { x: 1, y: 0 };
             nextDirection = { x: 1, y: 0 };
             score = 0;
+            currentSpeed = BASE_SPEED;
             scoreEl.textContent = score;
+            speedEl.textContent = 1;
             spawnFood();
             draw();
         }
@@ -444,6 +470,15 @@
             if (head.x === food.x && head.y === food.y) {
                 score += 10;
                 scoreEl.textContent = score;
+                
+                // Speed up when eating food
+                currentSpeed = Math.max(MIN_SPEED, currentSpeed - SPEED_DECREASE);
+                speedEl.textContent = Math.floor((BASE_SPEED - currentSpeed) / SPEED_DECREASE) + 1;
+                
+                // Restart game loop with new speed
+                clearInterval(gameLoop);
+                gameLoop = setInterval(update, currentSpeed);
+                
                 spawnFood();
             } else {
                 snake.pop();
@@ -476,7 +511,7 @@
             startBtn.disabled = true;
             gameOverOverlay.classList.remove('show');
             
-            gameLoop = setInterval(update, 100);
+            gameLoop = setInterval(update, currentSpeed);
         }
         
         function resetGame() {
