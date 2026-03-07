@@ -6,14 +6,18 @@
     <title>扫雷</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap');
-        
+
+        :root {
+            --cell-size: 28px;
+        }
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
             -webkit-tap-highlight-color: transparent;
         }
-        
+
         body {
             min-height: 100vh;
             display: flex;
@@ -25,7 +29,7 @@
             padding: 10px;
             touch-action: manipulation;
         }
-        
+
         h1 {
             color: #e94560;
             font-size: 1.8rem;
@@ -33,7 +37,7 @@
             text-shadow: 0 0 20px rgba(233, 69, 96, 0.5);
             letter-spacing: 4px;
         }
-        
+
         .game-container {
             background: rgba(255, 255, 255, 0.05);
             border-radius: 16px;
@@ -43,14 +47,14 @@
             width: 100%;
             max-width: 500px;
         }
-        
+
         .difficulty-bar {
             display: flex;
             gap: 8px;
             margin-bottom: 10px;
             justify-content: center;
         }
-        
+
         .diff-btn {
             padding: 6px 12px;
             background: rgba(255, 255, 255, 0.1);
@@ -62,16 +66,16 @@
             cursor: pointer;
             transition: all 0.3s ease;
         }
-        
+
         .diff-btn:hover, .diff-btn:active {
             background: rgba(255, 255, 255, 0.2);
         }
-        
+
         .diff-btn.active {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             border-color: transparent;
         }
-        
+
         .info-bar {
             display: flex;
             justify-content: space-around;
@@ -81,94 +85,94 @@
             background: rgba(0, 0, 0, 0.3);
             border-radius: 8px;
         }
-        
+
         .stat {
             display: flex;
             align-items: center;
             gap: 6px;
         }
-        
+
         .stat-label {
             font-size: 1rem;
         }
-        
+
         .stat-value {
             font-size: 1.1rem;
             font-weight: 700;
             color: #00ff88;
             text-shadow: 0 0 10px rgba(0, 255, 136, 0.5);
         }
-        
+
         .stat-value.mine {
             color: #e94560;
             text-shadow: 0 0 10px rgba(233, 69, 96, 0.5);
         }
-        
+
         .stat-value.time {
             color: #ffd700;
             text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
         }
-        
+
         .grid-container {
             background: #1a1a2e;
             border-radius: 8px;
             padding: 8px;
             box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.5);
-            overflow-x: auto;
+            overflow-x: hidden;
             display: flex;
             justify-content: center;
         }
-        
+
         .grid {
             display: grid;
             gap: 1px;
         }
-        
+
         .cell {
-            width: 28px;
-            height: 28px;
+            width: var(--cell-size);
+            height: var(--cell-size);
             background: linear-gradient(135deg, #2a2a4e 0%, #1a1a3e 100%);
             border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 3px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 0.85rem;
+            font-size: clamp(0.72rem, calc(var(--cell-size) * 0.4), 1rem);
             font-weight: 700;
             cursor: pointer;
             transition: all 0.1s ease;
             user-select: none;
             -webkit-user-select: none;
         }
-        
+
         .cell:hover:not(.revealed):not(.flagged) {
             background: linear-gradient(135deg, #3a3a5e 0%, #2a2a4e 100%);
         }
-        
+
         .cell.revealed {
             background: rgba(255, 255, 255, 0.05);
             cursor: default;
         }
-        
+
         .cell.mine {
             background: linear-gradient(135deg, #e94560 0%, #c73e54 100%);
         }
-        
+
         .cell.flagged {
             background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
         }
-        
+
         .cell.exploded {
             background: linear-gradient(135deg, #ff0000 0%, #cc0000 100%);
             animation: explode 0.3s ease;
         }
-        
+
         @keyframes explode {
             0% { transform: scale(1); }
             50% { transform: scale(1.2); }
             100% { transform: scale(1); }
         }
-        
+
         /* Number colors */
         .cell[data-num="1"] { color: #3498db; }
         .cell[data-num="2"] { color: #2ecc71; }
@@ -178,14 +182,14 @@
         .cell[data-num="6"] { color: #1abc9c; }
         .cell[data-num="7"] { color: #e67e22; }
         .cell[data-num="8"] { color: #ecf0f1; }
-        
+
         .controls {
             margin-top: 10px;
             display: flex;
             gap: 8px;
             justify-content: center;
         }
-        
+
         button {
             padding: 10px 20px;
             font-family: 'Orbitron', sans-serif;
@@ -197,17 +201,17 @@
             text-transform: uppercase;
             letter-spacing: 1px;
         }
-        
+
         .btn-start {
             background: linear-gradient(135deg, #00ff88 0%, #00cc6a 100%);
             color: #1a1a2e;
         }
-        
+
         .btn-reset {
             background: linear-gradient(135deg, #e94560 0%, #c73e54 100%);
             color: #fff;
         }
-        
+
         .game-over-overlay {
             position: fixed;
             top: 0;
@@ -224,35 +228,35 @@
             visibility: hidden;
             transition: all 0.3s ease;
         }
-        
+
         .game-over-overlay.show {
             opacity: 1;
             visibility: visible;
         }
-        
+
         .game-over-text {
             font-size: 2.5rem;
             margin-bottom: 15px;
             text-shadow: 0 0 30px currentColor;
         }
-        
+
         .game-over-text.win { color: #00ff88; }
         .game-over-text.lose { color: #e94560; }
-        
+
         .final-stats {
             color: #fff;
             font-size: 1rem;
             margin-bottom: 20px;
             text-align: center;
         }
-        
+
         .instructions {
             margin-top: 10px;
             color: rgba(255, 255, 255, 0.5);
             font-size: 0.65rem;
             text-align: center;
         }
-        
+
         .back-btn {
             position: fixed;
             top: 10px;
@@ -265,12 +269,56 @@
             font-size: 0.7rem;
             border: 1px solid rgba(255, 255, 255, 0.2);
         }
-        
+
         .best-time {
             color: rgba(255, 255, 255, 0.6);
             font-size: 0.75rem;
             margin-top: 8px;
             text-align: center;
+        }
+
+        .history-panel {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 8px;
+            background: rgba(0, 0, 0, 0.25);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.88);
+            font-size: 0.72rem;
+        }
+
+        .history-title {
+            color: #9ee7ff;
+            font-size: 0.7rem;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+        }
+
+        .history-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 6px;
+            margin-bottom: 8px;
+        }
+
+        .history-item {
+            display: flex;
+            justify-content: space-between;
+            gap: 8px;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .history-item strong {
+            color: #fff;
+            font-weight: 700;
+        }
+
+        .recent-list {
+            color: rgba(255, 255, 255, 0.7);
+            line-height: 1.5;
+            min-height: 1.5em;
+            word-break: break-word;
         }
 
         /* Touch hint */
@@ -280,19 +328,29 @@
             margin-top: 5px;
             text-align: center;
         }
+
+        @media (max-width: 600px) {
+            .game-container {
+                padding: 12px;
+            }
+
+            .info-bar {
+                padding: 8px;
+            }
+        }
     </style>
 </head>
 <body>
     <a href="index.html" class="back-btn">← 返回</a>
-    
+
     <h1>MINESWEEPER</h1>
-    
+
     <div class="game-container">
         <div class="difficulty-bar">
             <button class="diff-btn active" data-diff="easy">初级 9×9</button>
             <button class="diff-btn" data-diff="medium">中级 16×16</button>
         </div>
-        
+
         <div class="info-bar">
             <div class="stat">
                 <span class="stat-label">💣</span>
@@ -307,21 +365,22 @@
                 <span class="stat-value" id="flagCount">0</span>
             </div>
         </div>
-        
+
         <div class="grid-container">
             <div class="grid" id="grid"></div>
         </div>
-        
+
         <div class="controls">
             <button class="btn-start" id="startBtn">开始</button>
             <button class="btn-reset" id="resetBtn">重置</button>
         </div>
-        
+
         <div class="touch-hint">点击翻开 | 长按插旗</div>
-        
+
         <div class="best-time" id="bestTime"></div>
+        <div class="history-panel" id="historyPanel"></div>
     </div>
-    
+
     <div class="game-over-overlay" id="gameOverOverlay">
         <div class="game-over-text" id="gameOverText">游戏结束</div>
         <div class="final-stats" id="finalStats"></div>
@@ -340,13 +399,17 @@
         const gameOverText = document.getElementById('gameOverText');
         const finalStats = document.getElementById('finalStats');
         const bestTimeEl = document.getElementById('bestTime');
+        const historyPanel = document.getElementById('historyPanel');
         const diffBtns = document.querySelectorAll('.diff-btn');
-        
+
         const DIFFICULTIES = {
             easy: { rows: 9, cols: 9, mines: 10 },
             medium: { rows: 16, cols: 16, mines: 40 }
         };
-        
+
+        const STATS_KEY = 'minesweeperStatsV2';
+        const LEGACY_BEST_KEY = 'minesweeperBestTimes';
+
         let currentDiff = 'easy';
         let grid = [];
         let revealed = [];
@@ -360,15 +423,69 @@
         let flagCount = 0;
         let longPressTimer = null;
         let longPressDelay = 500; // ms
-        
-        let bestTimes = JSON.parse(localStorage.getItem('minesweeperBestTimes') || '{}');
-        
+
+        let gameStats = loadStats();
+
+        function getDefaultStats() {
+            return {
+                easy: { games: 0, wins: 0, totalWinTime: 0, bestTime: null, history: [] },
+                medium: { games: 0, wins: 0, totalWinTime: 0, bestTime: null, history: [] }
+            };
+        }
+
+        function loadStats() {
+            let parsed = null;
+            try {
+                parsed = JSON.parse(localStorage.getItem(STATS_KEY) || 'null');
+            } catch (e) {
+                parsed = null;
+            }
+
+            const defaults = getDefaultStats();
+            const merged = {
+                easy: { ...defaults.easy, ...(parsed && parsed.easy ? parsed.easy : {}) },
+                medium: { ...defaults.medium, ...(parsed && parsed.medium ? parsed.medium : {}) }
+            };
+
+            const legacyBestTimes = JSON.parse(localStorage.getItem(LEGACY_BEST_KEY) || '{}');
+            if (!merged.easy.bestTime && legacyBestTimes.easy_time) {
+                merged.easy.bestTime = legacyBestTimes.easy_time;
+            }
+            if (!merged.medium.bestTime && legacyBestTimes.medium_time) {
+                merged.medium.bestTime = legacyBestTimes.medium_time;
+            }
+
+            merged.easy.history = Array.isArray(merged.easy.history) ? merged.easy.history : [];
+            merged.medium.history = Array.isArray(merged.medium.history) ? merged.medium.history : [];
+
+            return merged;
+        }
+
+        function saveStats() {
+            localStorage.setItem(STATS_KEY, JSON.stringify(gameStats));
+        }
+
+        function getCellSize() {
+            const isMobile = window.matchMedia('(max-width: 768px)').matches;
+            const horizontalPadding = isMobile ? 44 : 70;
+            const viewportWidth = Math.max(220, window.innerWidth - horizontalPadding);
+            const containerWidth = (gridEl.parentElement ? gridEl.parentElement.clientWidth : viewportWidth) - 2;
+            const usableWidth = Math.max(220, Math.min(viewportWidth, containerWidth));
+
+            const targetSize = isMobile ? 44 : 34;
+            const maxSize = isMobile ? 46 : 36;
+            const minSize = isMobile ? 18 : 24;
+
+            const calculated = Math.floor((usableWidth - (cols - 1)) / cols);
+            return Math.max(minSize, Math.min(maxSize, Math.min(targetSize, calculated)));
+        }
+
         function initGame() {
             const config = DIFFICULTIES[currentDiff];
             rows = config.rows;
             cols = config.cols;
             mines = config.mines;
-            
+
             grid = [];
             revealed = [];
             flagged = [];
@@ -377,12 +494,12 @@
             gameOver = false;
             timer = 0;
             flagCount = 0;
-            
+
             if (timerInterval) {
                 clearInterval(timerInterval);
                 timerInterval = null;
             }
-            
+
             for (let i = 0; i < rows; i++) {
                 grid[i] = [];
                 revealed[i] = [];
@@ -393,29 +510,30 @@
                     flagged[i][j] = false;
                 }
             }
-            
+
             updateUI();
             renderGrid();
             updateBestTimeDisplay();
+            updateHistoryDisplay();
         }
-        
+
         function placeMines(firstRow, firstCol) {
             mineLocations = [];
             let placed = 0;
-            
+
             while (placed < mines) {
                 const r = Math.floor(Math.random() * rows);
                 const c = Math.floor(Math.random() * cols);
-                
+
                 const isNearFirst = Math.abs(r - firstRow) <= 1 && Math.abs(c - firstCol) <= 1;
-                
+
                 if (grid[r][c] !== -1 && !isNearFirst) {
                     grid[r][c] = -1;
                     mineLocations.push({ r, c });
                     placed++;
                 }
             }
-            
+
             for (let i = 0; i < rows; i++) {
                 for (let j = 0; j < cols; j++) {
                     if (grid[i][j] === -1) continue;
@@ -423,7 +541,7 @@
                 }
             }
         }
-        
+
         function countAdjacentMines(row, col) {
             let count = 0;
             for (let di = -1; di <= 1; di++) {
@@ -438,18 +556,20 @@
             }
             return count;
         }
-        
+
         function renderGrid() {
             gridEl.innerHTML = '';
-            gridEl.style.gridTemplateColumns = `repeat(${cols}, 28px)`;
-            
+            const cellSize = getCellSize();
+            document.documentElement.style.setProperty('--cell-size', `${cellSize}px`);
+            gridEl.style.gridTemplateColumns = `repeat(${cols}, ${cellSize}px)`;
+
             for (let i = 0; i < rows; i++) {
                 for (let j = 0; j < cols; j++) {
                     const cell = document.createElement('div');
                     cell.className = 'cell';
                     cell.dataset.row = i;
                     cell.dataset.col = j;
-                    
+
                     if (revealed[i][j]) {
                         cell.classList.add('revealed');
                         if (grid[i][j] === -1) {
@@ -463,34 +583,34 @@
                         cell.classList.add('flagged');
                         cell.textContent = '🚩';
                     }
-                    
+
                     // Mouse events
                     cell.addEventListener('click', () => handleClick(i, j));
                     cell.addEventListener('contextmenu', (e) => {
                         e.preventDefault();
                         handleRightClick(i, j);
                     });
-                    
+
                     // Touch events for long press (flag)
                     cell.addEventListener('touchstart', (e) => {
                         e.preventDefault();
                         handleTouchStart(i, j, e);
                     }, { passive: false });
-                    
+
                     cell.addEventListener('touchend', (e) => {
                         handleTouchEnd(i, j, e);
                     });
-                    
+
                     cell.addEventListener('touchmove', () => {
                         clearTimeout(longPressTimer);
                         longPressTimer = null;
                     });
-                    
+
                     gridEl.appendChild(cell);
                 }
             }
         }
-        
+
         function handleTouchStart(row, col, e) {
             longPressTimer = setTimeout(() => {
                 // Long press = flag
@@ -500,7 +620,7 @@
                 longPressTimer = null;
             }, longPressDelay);
         }
-        
+
         function handleTouchEnd(row, col, e) {
             if (longPressTimer) {
                 // Short tap = reveal
@@ -509,42 +629,42 @@
                 handleClick(row, col);
             }
         }
-        
+
         function handleClick(row, col) {
             if (gameOver || flagged[row][col] || revealed[row][col]) return;
-            
+
             if (!gameStarted) {
                 gameStarted = true;
                 placeMines(row, col);
                 startTimer();
             }
-            
+
             reveal(row, col);
             renderGrid();
             checkWin();
         }
-        
+
         function handleRightClick(row, col) {
             if (gameOver || revealed[row][col]) return;
-            
+
             flagged[row][col] = !flagged[row][col];
             flagCount += flagged[row][col] ? 1 : -1;
-            
+
             updateUI();
             renderGrid();
         }
-        
+
         function reveal(row, col) {
             if (row < 0 || row >= rows || col < 0 || col >= cols) return;
             if (revealed[row][col] || flagged[row][col]) return;
-            
+
             revealed[row][col] = true;
-            
+
             if (grid[row][col] === -1) {
                 endGame(false, row, col);
                 return;
             }
-            
+
             if (grid[row][col] === 0) {
                 for (let di = -1; di <= 1; di++) {
                     for (let dj = -1; dj <= 1; dj++) {
@@ -553,10 +673,10 @@
                 }
             }
         }
-        
+
         function checkWin() {
             if (gameOver) return;
-            
+
             let unrevealedSafe = 0;
             for (let i = 0; i < rows; i++) {
                 for (let j = 0; j < cols; j++) {
@@ -565,39 +685,68 @@
                     }
                 }
             }
-            
+
             if (unrevealedSafe === 0) {
                 endGame(true);
             }
         }
-        
+
+        function recordGameResult(won, time) {
+            const stats = gameStats[currentDiff];
+            stats.games += 1;
+            if (won) {
+                stats.wins += 1;
+                stats.totalWinTime += time;
+                if (!stats.bestTime || time < stats.bestTime) {
+                    stats.bestTime = time;
+                }
+            }
+
+            stats.history.unshift({
+                won,
+                time,
+                at: new Date().toISOString()
+            });
+
+            if (stats.history.length > 20) {
+                stats.history.length = 20;
+            }
+
+            saveStats();
+        }
+
         function endGame(won, explodedRow = -1, explodedCol = -1) {
             gameOver = true;
             stopTimer();
-            
+
             if (!won) {
                 mineLocations.forEach(({ r, c }) => {
                     revealed[r][c] = true;
                 });
             }
-            
-            if (won) {
-                const key = `${currentDiff}_time`;
-                if (!bestTimes[key] || timer < bestTimes[key]) {
-                    bestTimes[key] = timer;
-                    localStorage.setItem('minesweeperBestTimes', JSON.stringify(bestTimes));
-                }
-            }
-            
+
+            recordGameResult(won, timer);
+
             gameOverText.textContent = won ? '🎉 胜利!' : '💥 失败';
             gameOverText.className = 'game-over-text ' + (won ? 'win' : 'lose');
-            finalStats.innerHTML = `时间: ${timer}秒 | ${currentDiff === 'easy' ? '初级' : '中级'}`;
+
+            const diffLabel = currentDiff === 'easy' ? '初级' : '中级';
+            const stats = gameStats[currentDiff];
+            const avgTime = stats.wins > 0 ? (stats.totalWinTime / stats.wins).toFixed(1) : '--';
+            const winRate = stats.games > 0 ? `${Math.round((stats.wins / stats.games) * 100)}%` : '--';
+            finalStats.innerHTML = [
+                `难度: ${diffLabel} | 本局: ${timer}秒`,
+                `最佳: ${stats.bestTime ? stats.bestTime + '秒' : '--'} | 平均: ${avgTime === '--' ? '--' : avgTime + '秒'}`,
+                `局数: ${stats.games} | 胜率: ${winRate}`
+            ].join('<br>');
+
             gameOverOverlay.classList.add('show');
-            
+
             renderGrid();
             updateBestTimeDisplay();
+            updateHistoryDisplay();
         }
-        
+
         function startTimer() {
             timer = 0;
             timerEl.textContent = timer;
@@ -606,44 +755,66 @@
                 timerEl.textContent = timer;
             }, 1000);
         }
-        
+
         function stopTimer() {
             if (timerInterval) {
                 clearInterval(timerInterval);
                 timerInterval = null;
             }
         }
-        
+
         function updateUI() {
             mineCountEl.textContent = mines;
             timerEl.textContent = timer;
             flagCountEl.textContent = flagCount;
         }
-        
+
         function updateBestTimeDisplay() {
-            const key = `${currentDiff}_time`;
-            if (bestTimes[key]) {
-                bestTimeEl.textContent = `🏆 最佳: ${bestTimes[key]}秒`;
+            const stats = gameStats[currentDiff];
+            if (stats.bestTime) {
+                bestTimeEl.textContent = `🏆 最佳: ${stats.bestTime}秒`;
             } else {
                 bestTimeEl.textContent = '';
             }
         }
-        
+
+        function updateHistoryDisplay() {
+            const stats = gameStats[currentDiff];
+            const avgTime = stats.wins > 0 ? (stats.totalWinTime / stats.wins).toFixed(1) : '--';
+            const winRate = stats.games > 0 ? `${Math.round((stats.wins / stats.games) * 100)}%` : '--';
+            const recent = stats.history.slice(0, 5);
+            const recentText = recent.length
+                ? recent.map(item => `${item.won ? '✅' : '❌'} ${item.time}s`).join(' | ')
+                : '暂无历史记录';
+            const diffLabel = currentDiff === 'easy' ? '初级' : '中级';
+
+            historyPanel.innerHTML = `
+                <div class="history-title">${diffLabel} 统计</div>
+                <div class="history-grid">
+                    <div class="history-item"><span>最佳</span><strong>${stats.bestTime ? stats.bestTime + '秒' : '--'}</strong></div>
+                    <div class="history-item"><span>平均</span><strong>${avgTime === '--' ? '--' : avgTime + '秒'}</strong></div>
+                    <div class="history-item"><span>游戏次数</span><strong>${stats.games}</strong></div>
+                    <div class="history-item"><span>胜率</span><strong>${winRate}</strong></div>
+                </div>
+                <div class="recent-list">最近 5 局: ${recentText}</div>
+            `;
+        }
+
         startBtn.addEventListener('click', () => {
             initGame();
             startBtn.disabled = true;
         });
-        
+
         resetBtn.addEventListener('click', () => {
             gameOverOverlay.classList.remove('show');
             initGame();
         });
-        
+
         playAgainBtn.addEventListener('click', () => {
             gameOverOverlay.classList.remove('show');
             initGame();
         });
-        
+
         diffBtns.forEach(btn => {
             btn.addEventListener('click', () => {
                 diffBtns.forEach(b => b.classList.remove('active'));
@@ -652,7 +823,11 @@
                 initGame();
             });
         });
-        
+
+        window.addEventListener('resize', () => {
+            renderGrid();
+        });
+
         initGame();
     </script>
 </body>
