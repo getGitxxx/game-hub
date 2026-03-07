@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>国际象棋</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        body {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            font-family: 'Orbitron', sans-serif;
+            padding: 15px;
+            touch-action: manipulation;
+        }
+        
+        h1 {
+            color: #00ff88;
+            font-size: 1.8rem;
+            margin-bottom: 15px;
+            text-shadow: 0 0 20px rgba(0, 255, 136, 0.5);
+            letter-spacing: 3px;
+        }
+        
+        .game-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .board-wrapper {
+            position: relative;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 12px;
+            padding: 10px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+        
+        #chessboard {
+            display: grid;
+            grid-template-columns: repeat(8, 1fr);
+            gap: 0;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        
+        .square {
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 36px;
+            cursor: pointer;
+            user-select: none;
+            position: relative;
+        }
+        
+        .square.light {
+            background: #f0d9b5;
+        }
+        
+        .square.dark {
+            background: #b58863;
+        }
+        
+        .square.selected {
+            background: rgba(255, 255, 0, 0.6) !important;
+        }
+        
+        .square.valid-move::after {
+            content: '';
+            position: absolute;
+            width: 16px;
+            height: 16px;
+            background: rgba(0, 255, 136, 0.5);
+            border-radius: 50%;
+        }
+        
+        .square.valid-move.has-piece::after {
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 0, 0, 0.3);
+            border-radius: 0;
+        }
+        
+        .square.last-move {
+            background: rgba(155, 199, 0, 0.4) !important;
+        }
+        
+        .square.in-check {
+            background: rgba(255, 0, 0, 0.6) !important;
+        }
+        
+        .piece {
+            font-size: 36px;
+            line-height: 1;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+        }
+        
+        .piece.white {
+            filter: drop-shadow(1px 1px 1px rgba(0, 0, 0, 0.5));
+        }
+        
+        .piece.black {
+            filter: drop-shadow(1px 1px 1px rgba(255, 255, 255, 0.3));
+        }
+        
+        .info-panel {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        
+        .info-box {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            padding: 10px 20px;
+            text-align: center;
+        }
+        
+        .info-label {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.7rem;
+            margin-bottom: 5px;
+        }
+        
+        .info-value {
+            color: #00ff88;
+            font-size: 1.2rem;
+            font-weight: 700;
+        }
+        
+        .turn-indicator {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .turn-dot {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            border: 2px solid #fff;
+        }
+        
+        .turn-dot.white-turn {
+            background: #fff;
+        }
+        
+        .turn-dot.black-turn {
+            background: #333;
+        }
+        
+        .controls {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        
+        button {
+            padding: 10px 20px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.75rem;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #00ff88 0%, #00cc6a 100%);
+            color: #1a1a2e;
+        }
+        
+        .btn-secondary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #fff;
+        }
+        
+        .btn-danger {
+            background: linear-gradient(135deg, #e94560 0%, #c73e54 100%);
+            color: #fff;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+        
+        .status-message {
+            color: #fff;
+            font-size: 1rem;
+            padding: 10px 20px;
+            background: rgba(233, 69, 96, 0.8);
+            border-radius: 8px;
+            display: none;
+        }
+        
+        .status-message.show {
+            display: block;
+            animation: pulse 1s ease-in-out infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+        
+        .move-history {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            padding: 10px;
+            max-width: 400px;
+            max-height: 150px;
+            overflow-y: auto;
+        }
+        
+        .move-history h3 {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.7rem;
+            margin-bottom: 8px;
+        }
+        
+        .moves-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+        }
+        
+        .move {
+            color: #fff;
+            font-size: 0.8rem;
+            padding: 4px 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+        }
+        
+        .back-btn {
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            padding: 8px 12px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 0.7rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .captured-pieces {
+            display: flex;
+            gap: 20px;
+            font-size: 1.5rem;
+        }
+        
+        .captured-group {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .captured-label {
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 0.6rem;
+        }
+        
+        .captured-list {
+            display: flex;
+            flex-wrap: wrap;
+            max-width: 200px;
+        }
+        
+        /* Promotion Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        
+        .modal-overlay.show {
+            display: flex;
+        }
+        
+        .modal-content {
+            background: #1a1a2e;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .modal-content h3 {
+            color: #fff;
+            margin-bottom: 15px;
+        }
+        
+        .promotion-pieces {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+        
+        .promotion-piece {
+            font-size: 40px;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .promotion-piece:hover {
+            background: rgba(0, 255, 136, 0.3);
+            transform: scale(1.1);
+        }
+        
+        @media (max-width: 500px) {
+            h1 { font-size: 1.3rem; }
+            .square { width: 40px; height: 40px; }
+            .piece { font-size: 28px; }
+        }
+    </style>
+</head>
+<body>
+    <a href="index.html" class="back-btn">← 返回</a>
+    
+    <h1>CHESS</h1>
+    
+    <div class="game-container">
+        <div class="captured-pieces">
+            <div class="captured-group">
+                <span class="captured-label">黑方被吃</span>
+                <div class="captured-list" id="capturedBlack"></div>
+            </div>
+            <div class="captured-group">
+                <span class="captured-label">白方被吃</span>
+                <div class="captured-list" id="capturedWhite"></div>
+            </div>
+        </div>
+        
+        <div class="board-wrapper">
+            <div id="chessboard"></div>
+        </div>
+        
+        <div class="status-message" id="statusMessage"></div>
+        
+        <div class="info-panel">
+            <div class="info-box">
+                <div class="info-label">回合</div>
+                <div class="turn-indicator">
+                    <div class="turn-dot white-turn" id="turnDot"></div>
+                    <span class="info-value" id="turnText">白方</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="controls">
+            <button class="btn-secondary" id="undoBtn">悔棋</button>
+            <button class="btn-primary" id="newGameBtn">新游戏</button>
+            <button class="btn-danger" id="flipBtn">翻转棋盘</button>
+        </div>
+        
+        <div class="move-history">
+            <h3>走棋记录</h3>
+            <div class="moves-list" id="movesList"></div>
+        </div>
+    </div>
+    
+    <!-- Promotion Modal -->
+    <div class="modal-overlay" id="promotionModal">
+        <div class="modal-content">
+            <h3>选择升变棋子</h3>
+            <div class="promotion-pieces" id="promotionPieces"></div>
+        </div>
+    </div>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
+    <script>
+        // Chess piece Unicode characters
+        const PIECES = {
+            'K': '♔', 'Q': '♕', 'R': '♖', 'B': '♗', 'N': '♘', 'P': '♙',
+            'k': '♚', 'q': '♛', 'r': '♜', 'b': '♝', 'n': '♞', 'p': '♟'
+        };
+        
+        // Game state
+        let game = new Chess();
+        let selectedSquare = null;
+        let validMoves = [];
+        let lastMove = null;
+        let isFlipped = false;
+        let capturedPieces = { w: [], b: [] };
+        let moveHistory = [];
+        
+        // DOM elements
+        const boardEl = document.getElementById('chessboard');
+        const turnDot = document.getElementById('turnDot');
+        const turnText = document.getElementById('turnText');
+        const statusMessage = document.getElementById('statusMessage');
+        const movesList = document.getElementById('movesList');
+        const capturedBlackEl = document.getElementById('capturedBlack');
+        const capturedWhiteEl = document.getElementById('capturedWhite');
+        const promotionModal = document.getElementById('promotionModal');
+        const promotionPieces = document.getElementById('promotionPieces');
+        
+        // Initialize board
+        function initBoard() {
+            boardEl.innerHTML = '';
+            
+            for (let row = 0; row < 8; row++) {
+                for (let col = 0; col < 8; col++) {
+                    const actualRow = isFlipped ? 7 - row : row;
+                    const actualCol = isFlipped ? 7 - col : col;
+                    const squareName = String.fromCharCode(97 + actualCol) + (8 - actualRow);
+                    
+                    const square = document.createElement('div');
+                    square.className = 'square';
+                    square.classList.add((row + col) % 2 === 0 ? 'light' : 'dark');
+                    square.dataset.square = squareName;
+                    
+                    // Check if this is a last move square
+                    if (lastMove && (squareName === lastMove.from || squareName === lastMove.to)) {
+                        square.classList.add('last-move');
+                    }
+                    
+                    // Add piece if exists
+                    const piece = game.get(squareName);
+                    if (piece) {
+                        const pieceEl = document.createElement('span');
+                        pieceEl.className = 'piece';
+                        pieceEl.classList.add(piece.color === 'w' ? 'white' : 'black');
+                        pieceEl.textContent = PIECES[piece.type === piece.type.toUpperCase() ? piece.type.toUpperCase() : piece.type.toLowerCase()];
+                        
+                        // Adjust case based on color
+                        const pieceChar = piece.color === 'w' ? piece.type.toUpperCase() : piece.type.toLowerCase();
+                        pieceEl.textContent = PIECES[pieceChar];
+                        
+                        square.appendChild(pieceEl);
+                        
+                        // Check highlight
+                        if (piece.type === 'k' && game.in_check() && game.turn() === piece.color) {
+                            square.classList.add('in-check');
+                        }
+                    }
+                    
+                    // Add valid move indicator
+                    if (validMoves.includes(squareName)) {
+                        square.classList.add('valid-move');
+                        if (piece) square.classList.add('has-piece');
+                    }
+                    
+                    // Selected square
+                    if (selectedSquare === squareName) {
+                        square.classList.add('selected');
+                    }
+                    
+                    square.addEventListener('click', () => handleSquareClick(squareName));
+                    boardEl.appendChild(square);
+                }
+            }
+        }
+        
+        // Handle square click
+        function handleSquareClick(square) {
+            const piece = game.get(square);
+            
+            // If a piece is already selected
+            if (selectedSquare) {
+                // Check if clicking on a valid move
+                if (validMoves.includes(square)) {
+                    // Check for promotion
+                    const selectedPiece = game.get(selectedSquare);
+                    if (selectedPiece && selectedPiece.type === 'p') {
+                        const targetRank = square[1];
+                        if ((selectedPiece.color === 'w' && targetRank === '8') ||
+                            (selectedPiece.color === 'b' && targetRank === '1')) {
+                            showPromotionDialog(selectedSquare, square, selectedPiece.color);
+                            return;
+                        }
+                    }
+                    
+                    makeMove(selectedSquare, square);
+                } else if (piece && piece.color === game.turn()) {
+                    // Select different piece of same color
+                    selectedSquare = square;
+                    validMoves = game.moves({ square: square, verbose: true }).map(m => m.to);
+                    initBoard();
+                } else {
+                    // Deselect
+                    selectedSquare = null;
+                    validMoves = [];
+                    initBoard();
+                }
+            } else {
+                // Select a piece
+                if (piece && piece.color === game.turn()) {
+                    selectedSquare = square;
+                    validMoves = game.moves({ square: square, verbose: true }).map(m => m.to);
+                    initBoard();
+                }
+            }
+        }
+        
+        // Make a move
+        function makeMove(from, to, promotion = null) {
+            const moveOptions = { from, to };
+            if (promotion) moveOptions.promotion = promotion;
+            
+            const move = game.move(moveOptions);
+            
+            if (move) {
+                // Track captured piece
+                if (move.captured) {
+                    const capturedColor = move.color === 'w' ? 'b' : 'w';
+                    capturedPieces[capturedColor].push(move.captured);
+                    updateCapturedDisplay();
+                }
+                
+                // Track last move
+                lastMove = { from, to };
+                moveHistory.push(move.san);
+                updateMoveHistory();
+                
+                // Reset selection
+                selectedSquare = null;
+                validMoves = [];
+                
+                // Update display
+                initBoard();
+                updateTurnDisplay();
+                checkGameStatus();
+            }
+        }
+        
+        // Show promotion dialog
+        function showPromotionDialog(from, to, color) {
+            promotionPieces.innerHTML = '';
+            const pieces = color === 'w' ? ['Q', 'R', 'B', 'N'] : ['q', 'r', 'b', 'n'];
+            
+            pieces.forEach(p => {
+                const btn = document.createElement('div');
+                btn.className = 'promotion-piece';
+                btn.textContent = PIECES[p];
+                btn.addEventListener('click', () => {
+                    promotionModal.classList.remove('show');
+                    makeMove(from, to, p.toLowerCase());
+                });
+                promotionPieces.appendChild(btn);
+            });
+            
+            promotionModal.classList.add('show');
+        }
+        
+        // Update turn display
+        function updateTurnDisplay() {
+            const isWhiteTurn = game.turn() === 'w';
+            turnDot.className = 'turn-dot ' + (isWhiteTurn ? 'white-turn' : 'black-turn');
+            turnText.textContent = isWhiteTurn ? '白方' : '黑方';
+        }
+        
+        // Check game status
+        function checkGameStatus() {
+            statusMessage.classList.remove('show');
+            
+            if (game.in_checkmate()) {
+                const winner = game.turn() === 'w' ? '黑方' : '白方';
+                statusMessage.textContent = `将死！${winner}获胜！`;
+                statusMessage.classList.add('show');
+            } else if (game.in_draw()) {
+                let reason = '和棋';
+                if (game.in_stalemate()) reason = '逼和！';
+                else if (game.in_threefold_repetition()) reason = '三次重复局面，和棋';
+                else if (game.insufficient_material()) reason = '子力不足，和棋';
+                statusMessage.textContent = reason;
+                statusMessage.classList.add('show');
+            } else if (game.in_check()) {
+                statusMessage.textContent = '将军！';
+                statusMessage.classList.add('show');
+            }
+        }
+        
+        // Update captured pieces display
+        function updateCapturedDisplay() {
+            capturedWhiteEl.innerHTML = capturedPieces.w.map(p => PIECES[p.toLowerCase()]).join('');
+            capturedBlackEl.innerHTML = capturedPieces.b.map(p => PIECES[p.toUpperCase()]).join('');
+        }
+        
+        // Update move history
+        function updateMoveHistory() {
+            movesList.innerHTML = moveHistory.map((move, i) => {
+                const moveNum = Math.floor(i / 2) + 1;
+                const isWhite = i % 2 === 0;
+                return isWhite ? 
+                    `<span class="move">${moveNum}. ${move}</span>` : 
+                    `<span class="move">${move}</span>`;
+            }).join('');
+        }
+        
+        // Undo move
+        function undoMove() {
+            if (moveHistory.length > 0) {
+                const move = game.undo();
+                if (move) {
+                    moveHistory.pop();
+                    
+                    // Remove from captured if applicable
+                    if (move.captured) {
+                        const capturedColor = move.color === 'w' ? 'b' : 'w';
+                        capturedPieces[capturedColor].pop();
+                        updateCapturedDisplay();
+                    }
+                    
+                    // Update last move
+                    if (moveHistory.length >= 2) {
+                        // This is simplified - proper tracking would need history
+                    } else {
+                        lastMove = null;
+                    }
+                    
+                    selectedSquare = null;
+                    validMoves = [];
+                    initBoard();
+                    updateTurnDisplay();
+                    statusMessage.classList.remove('show');
+                    updateMoveHistory();
+                }
+            }
+        }
+        
+        // New game
+        function newGame() {
+            game = new Chess();
+            selectedSquare = null;
+            validMoves = [];
+            lastMove = null;
+            capturedPieces = { w: [], b: [] };
+            moveHistory = [];
+            
+            initBoard();
+            updateTurnDisplay();
+            updateCapturedDisplay();
+            updateMoveHistory();
+            statusMessage.classList.remove('show');
+        }
+        
+        // Flip board
+        function flipBoard() {
+            isFlipped = !isFlipped;
+            initBoard();
+        }
+        
+        // Event listeners
+        document.getElementById('undoBtn').addEventListener('click', undoMove);
+        document.getElementById('newGameBtn').addEventListener('click', newGame);
+        document.getElementById('flipBtn').addEventListener('click', flipBoard);
+        
+        // Initialize
+        initBoard();
+        updateTurnDisplay();
+    </script>
+</body>
+</html>
