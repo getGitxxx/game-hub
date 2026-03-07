@@ -454,20 +454,21 @@
         const pauseIndicator = document.getElementById('pauseIndicator');
         const dpad = document.getElementById('dpad');
         
+        // 游戏常量 - 必须在使用前声明
+        const GRID_SIZE = 20;
+        let TILE_COUNT = 17; // 默认值，会在 resizeCanvas 后更新
+        
         // 响应式 Canvas 尺寸
         function resizeCanvas() {
             const wrapper = canvas.parentElement;
             const size = Math.min(wrapper.clientWidth, wrapper.clientHeight, 350);
-            canvas.width = Math.floor(size / 20) * 20;
+            canvas.width = Math.floor(size / GRID_SIZE) * GRID_SIZE;
             canvas.height = canvas.width;
+            TILE_COUNT = canvas.width / GRID_SIZE;
             draw();
         }
         
         window.addEventListener('resize', resizeCanvas);
-        resizeCanvas();
-        
-        const GRID_SIZE = 20;
-        let TILE_COUNT = canvas.width / GRID_SIZE;
         
         // Speed settings
         const BASE_SPEED = 180;
