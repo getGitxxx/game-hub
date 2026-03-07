@@ -2,8 +2,10 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>贪吃蛇</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>贪吃蛇 - Boss游戏中心</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap');
         
@@ -14,22 +16,30 @@
             -webkit-tap-highlight-color: transparent;
         }
         
+        html, body {
+            height: 100%;
+            overflow: hidden;
+        }
+        
         body {
             min-height: 100vh;
+            min-height: 100dvh;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
             font-family: 'Orbitron', sans-serif;
-            padding: 20px;
+            padding: 10px;
+            padding-top: env(safe-area-inset-top, 10px);
+            padding-bottom: env(safe-area-inset-bottom, 10px);
             touch-action: manipulation;
         }
         
         h1 {
             color: #e94560;
-            font-size: 2rem;
-            margin-bottom: 15px;
+            font-size: clamp(1.2rem, 5vw, 2rem);
+            margin-bottom: 10px;
             text-shadow: 0 0 20px rgba(233, 69, 96, 0.5);
             letter-spacing: 4px;
         }
@@ -37,29 +47,33 @@
         .game-container {
             background: rgba(255, 255, 255, 0.05);
             border-radius: 16px;
-            padding: 15px;
+            padding: 10px;
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3),
                         inset 0 1px 0 rgba(255, 255, 255, 0.1);
             border: 1px solid rgba(255, 255, 255, 0.1);
             display: flex;
             flex-direction: column;
             align-items: center;
+            width: 100%;
+            max-width: 450px;
         }
         
         .info-bar {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 10px;
-            padding: 8px 12px;
+            margin-bottom: 8px;
+            padding: 6px 10px;
             background: rgba(0, 0, 0, 0.3);
             border-radius: 8px;
             width: 100%;
+            flex-wrap: wrap;
+            gap: 5px;
         }
         
         .score {
             color: #00ff88;
-            font-size: 1rem;
+            font-size: clamp(0.8rem, 3vw, 1rem);
             text-shadow: 0 0 10px rgba(0, 255, 136, 0.5);
         }
         
@@ -70,14 +84,21 @@
         
         .high-score {
             color: #ffd700;
-            font-size: 0.8rem;
+            font-size: clamp(0.7rem, 2.5vw, 0.8rem);
             text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
         }
         
         .speed-indicator {
             color: #3498db;
-            font-size: 0.8rem;
+            font-size: clamp(0.7rem, 2.5vw, 0.8rem);
             text-shadow: 0 0 10px rgba(52, 152, 219, 0.5);
+        }
+        
+        .canvas-wrapper {
+            width: 100%;
+            aspect-ratio: 1;
+            max-width: 350px;
+            max-height: 50vh;
         }
         
         canvas {
@@ -85,7 +106,9 @@
             border-radius: 8px;
             background: linear-gradient(180deg, #0a0a0a 0%, #1a1a1a 100%);
             box-shadow: inset 0 0 50px rgba(0, 0, 0, 0.5);
-            max-width: 100%;
+            width: 100%;
+            height: 100%;
+            touch-action: none;
         }
         
         .controls {
@@ -93,18 +116,20 @@
             display: flex;
             gap: 8px;
             justify-content: center;
+            flex-wrap: wrap;
         }
         
         button {
-            padding: 10px 25px;
+            padding: 10px 20px;
             font-family: 'Orbitron', sans-serif;
-            font-size: 0.8rem;
+            font-size: clamp(0.7rem, 2.5vw, 0.8rem);
             border: none;
             border-radius: 8px;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: all 0.2s ease;
             text-transform: uppercase;
-            letter-spacing: 2px;
+            letter-spacing: 1px;
+            min-width: 80px;
         }
         
         .btn-start {
@@ -113,9 +138,8 @@
             box-shadow: 0 4px 15px rgba(0, 255, 136, 0.3);
         }
         
-        .btn-start:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(0, 255, 136, 0.5);
+        .btn-start:active {
+            transform: scale(0.95);
         }
         
         .btn-reset {
@@ -124,9 +148,18 @@
             box-shadow: 0 4px 15px rgba(233, 69, 96, 0.3);
         }
         
-        .btn-reset:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(233, 69, 96, 0.5);
+        .btn-reset:active {
+            transform: scale(0.95);
+        }
+        
+        .btn-pause {
+            background: linear-gradient(135deg, #ffd700 0%, #ffb700 100%);
+            color: #1a1a2e;
+            box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);
+        }
+        
+        .btn-pause:active {
+            transform: scale(0.95);
         }
         
         button:disabled {
@@ -135,16 +168,17 @@
             transform: none !important;
         }
         
-        /* Virtual D-Pad for mobile - centered */
+        /* Virtual D-Pad - 改进版 */
         .dpad-container {
             display: none;
-            margin-top: 20px;
+            margin-top: 15px;
             position: relative;
-            width: 150px;
-            height: 150px;
+            width: 180px;
+            height: 180px;
+            flex-shrink: 0;
         }
         
-        @media (max-width: 768px), (hover: none) {
+        @media (max-width: 768px), (hover: none), (pointer: coarse) {
             .dpad-container {
                 display: block;
             }
@@ -152,25 +186,28 @@
         
         .dpad-btn {
             position: absolute;
-            width: 50px;
-            height: 50px;
-            background: rgba(255, 255, 255, 0.1);
-            border: 2px solid rgba(255, 255, 255, 0.2);
-            border-radius: 10px;
+            width: 60px;
+            height: 60px;
+            background: rgba(255, 255, 255, 0.15);
+            border: 2px solid rgba(0, 255, 136, 0.4);
+            border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.5rem;
+            font-size: 1.8rem;
             color: #00ff88;
             cursor: pointer;
-            transition: all 0.15s ease;
+            transition: all 0.1s ease;
             user-select: none;
+            -webkit-user-select: none;
+            touch-action: manipulation;
         }
         
-        .dpad-btn:active {
-            background: rgba(0, 255, 136, 0.3);
+        .dpad-btn:active, .dpad-btn.active {
+            background: rgba(0, 255, 136, 0.4);
             border-color: #00ff88;
-            transform: scale(0.95);
+            transform: scale(0.92);
+            box-shadow: 0 0 20px rgba(0, 255, 136, 0.5);
         }
         
         .dpad-up {
@@ -197,20 +234,38 @@
             transform: translateY(-50%);
         }
         
-        .dpad-btn:active.dpad-up {
-            transform: translateX(-50%) scale(0.95);
+        .dpad-btn:active.dpad-up, .dpad-btn.active.dpad-up {
+            transform: translateX(-50%) scale(0.92);
         }
         
-        .dpad-btn:active.dpad-down {
-            transform: translateX(-50%) scale(0.95);
+        .dpad-btn:active.dpad-down, .dpad-btn.active.dpad-down {
+            transform: translateX(-50%) scale(0.92);
         }
         
-        .dpad-btn:active.dpad-left {
-            transform: translateY(-50%) scale(0.95);
+        .dpad-btn:active.dpad-left, .dpad-btn.active.dpad-left {
+            transform: translateY(-50%) scale(0.92);
         }
         
-        .dpad-btn:active.dpad-right {
-            transform: translateY(-50%) scale(0.95);
+        .dpad-btn:active.dpad-right, .dpad-btn.active.dpad-right {
+            transform: translateY(-50%) scale(0.92);
+        }
+        
+        /* 中央指示 */
+        .dpad-center {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 50px;
+            height: 50px;
+            background: rgba(233, 69, 96, 0.3);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #e94560;
+            font-size: 0.7rem;
+            pointer-events: none;
         }
         
         .game-over-overlay {
@@ -219,7 +274,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.8);
+            background: rgba(0, 0, 0, 0.85);
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -237,8 +292,8 @@
         
         .game-over-text {
             color: #e94560;
-            font-size: 2.5rem;
-            margin-bottom: 20px;
+            font-size: clamp(1.8rem, 8vw, 2.5rem);
+            margin-bottom: 15px;
             text-shadow: 0 0 30px rgba(233, 69, 96, 0.8);
             animation: pulse 1s ease-in-out infinite;
         }
@@ -250,34 +305,96 @@
         
         .final-score {
             color: #fff;
-            font-size: 1.2rem;
-            margin-bottom: 30px;
+            font-size: clamp(1rem, 4vw, 1.2rem);
+            margin-bottom: 25px;
         }
         
         .instructions {
             margin-top: 10px;
             color: rgba(255, 255, 255, 0.5);
-            font-size: 0.7rem;
+            font-size: clamp(0.6rem, 2vw, 0.7rem);
             text-align: center;
             letter-spacing: 1px;
+            padding: 0 10px;
         }
         
         .back-btn {
             position: fixed;
-            top: 15px;
-            left: 15px;
+            top: 10px;
+            left: 10px;
             background: rgba(255, 255, 255, 0.1);
             color: #fff;
-            padding: 8px 15px;
+            padding: 8px 12px;
             border-radius: 8px;
             text-decoration: none;
-            font-size: 0.75rem;
+            font-size: clamp(0.65rem, 2vw, 0.75rem);
             transition: all 0.3s ease;
             border: 1px solid rgba(255, 255, 255, 0.2);
+            z-index: 50;
         }
         
-        .back-btn:hover {
+        .back-btn:active {
             background: rgba(255, 255, 255, 0.2);
+            transform: scale(0.95);
+        }
+        
+        /* 暂停指示器 */
+        .pause-indicator {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #ffd700;
+            font-size: 1.5rem;
+            text-shadow: 0 0 20px rgba(255, 215, 0, 0.8);
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .pause-indicator.show {
+            opacity: 1;
+        }
+        
+        /* 横屏优化 */
+        @media (orientation: landscape) and (max-height: 500px) {
+            body {
+                flex-direction: row;
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 10px;
+            }
+            
+            .game-container {
+                max-width: 300px;
+            }
+            
+            .canvas-wrapper {
+                max-height: 60vh;
+            }
+            
+            .dpad-container {
+                margin-top: 10px;
+                width: 140px;
+                height: 140px;
+            }
+            
+            .dpad-btn {
+                width: 45px;
+                height: 45px;
+                font-size: 1.4rem;
+            }
+        }
+        
+        /* 减少动画偏好 */
+        @media (prefers-reduced-motion: reduce) {
+            .game-over-text {
+                animation: none;
+            }
+            
+            button, .dpad-btn {
+                transition: none;
+            }
         }
     </style>
 </head>
@@ -293,22 +410,27 @@
             <div class="high-score">最高: <span id="highScore">0</span></div>
         </div>
         
-        <canvas id="gameCanvas" width="400" height="400"></canvas>
+        <div class="canvas-wrapper" style="position: relative;">
+            <canvas id="gameCanvas"></canvas>
+            <div class="pause-indicator" id="pauseIndicator">⏸ 已暂停</div>
+        </div>
         
         <div class="controls">
             <button class="btn-start" id="startBtn">开始</button>
+            <button class="btn-pause" id="pauseBtn" disabled>暂停</button>
             <button class="btn-reset" id="resetBtn">重置</button>
         </div>
         
-        <!-- Virtual D-Pad for mobile - centered -->
+        <!-- Virtual D-Pad for mobile -->
         <div class="dpad-container" id="dpad">
             <div class="dpad-btn dpad-up" data-dir="up">↑</div>
             <div class="dpad-btn dpad-down" data-dir="down">↓</div>
             <div class="dpad-btn dpad-left" data-dir="left">←</div>
             <div class="dpad-btn dpad-right" data-dir="right">→</div>
+            <div class="dpad-center">SWIPE</div>
         </div>
         
-        <div class="instructions">键盘方向键 或 触屏虚拟按键控制</div>
+        <div class="instructions">键盘方向键 / 触屏滑动 / 虚拟按键控制</div>
     </div>
     
     <div class="game-over-overlay" id="gameOverOverlay">
@@ -326,42 +448,62 @@
         const finalScoreEl = document.getElementById('finalScore');
         const startBtn = document.getElementById('startBtn');
         const resetBtn = document.getElementById('resetBtn');
+        const pauseBtn = document.getElementById('pauseBtn');
         const playAgainBtn = document.getElementById('playAgainBtn');
         const gameOverOverlay = document.getElementById('gameOverOverlay');
+        const pauseIndicator = document.getElementById('pauseIndicator');
         const dpad = document.getElementById('dpad');
         
-        const GRID_SIZE = 20;
-        const TILE_COUNT = canvas.width / GRID_SIZE;
+        // 响应式 Canvas 尺寸
+        function resizeCanvas() {
+            const wrapper = canvas.parentElement;
+            const size = Math.min(wrapper.clientWidth, wrapper.clientHeight, 350);
+            canvas.width = Math.floor(size / 20) * 20;
+            canvas.height = canvas.width;
+            draw();
+        }
         
-        // Speed settings: start slow, speed up with food
-        const BASE_SPEED = 200; // Initial interval (ms) - slower start
-        const MIN_SPEED = 50;   // Fastest speed
-        const SPEED_DECREASE = 5; // How much faster per food
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+        
+        const GRID_SIZE = 20;
+        let TILE_COUNT = canvas.width / GRID_SIZE;
+        
+        // Speed settings
+        const BASE_SPEED = 180;
+        const MIN_SPEED = 60;
+        const SPEED_DECREASE = 4;
         
         let snake = [];
         let food = { x: 0, y: 0 };
         let direction = { x: 0, y: 0 };
         let nextDirection = { x: 0, y: 0 };
         let score = 0;
-        let highScore = localStorage.getItem('snakeHighScore') || 0;
+        let highScore = parseInt(localStorage.getItem('snakeHighScore')) || 0;
         let gameLoop = null;
         let isRunning = false;
+        let isPaused = false;
         let currentSpeed = BASE_SPEED;
         
         highScoreEl.textContent = highScore;
         
         function initGame() {
+            TILE_COUNT = canvas.width / GRID_SIZE;
+            const center = Math.floor(TILE_COUNT / 2);
             snake = [
-                { x: 10, y: 10 },
-                { x: 9, y: 10 },
-                { x: 8, y: 10 }
+                { x: center, y: center },
+                { x: center - 1, y: center },
+                { x: center - 2, y: center }
             ];
             direction = { x: 1, y: 0 };
             nextDirection = { x: 1, y: 0 };
             score = 0;
             currentSpeed = BASE_SPEED;
+            isPaused = false;
             scoreEl.textContent = score;
             speedEl.textContent = 1;
+            pauseIndicator.classList.remove('show');
+            pauseBtn.textContent = '暂停';
             spawnFood();
             draw();
         }
@@ -376,11 +518,14 @@
         }
         
         function draw() {
+            // 清空画布
             ctx.fillStyle = '#0a0a0a';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
             
+            // 绘制网格
             ctx.strokeStyle = 'rgba(255, 255, 255, 0.03)';
-            for (let i = 0; i < TILE_COUNT; i++) {
+            ctx.lineWidth = 1;
+            for (let i = 0; i <= TILE_COUNT; i++) {
                 ctx.beginPath();
                 ctx.moveTo(i * GRID_SIZE, 0);
                 ctx.lineTo(i * GRID_SIZE, canvas.height);
@@ -391,6 +536,7 @@
                 ctx.stroke();
             }
             
+            // 绘制蛇
             snake.forEach((segment, index) => {
                 const gradient = ctx.createRadialGradient(
                     segment.x * GRID_SIZE + GRID_SIZE / 2,
@@ -405,25 +551,27 @@
                     gradient.addColorStop(0, '#00ff88');
                     gradient.addColorStop(1, '#00cc6a');
                 } else {
-                    gradient.addColorStop(0, '#4ade80');
-                    gradient.addColorStop(1, '#22c55e');
+                    const alpha = 1 - (index / snake.length) * 0.4;
+                    gradient.addColorStop(0, `rgba(74, 222, 128, ${alpha})`);
+                    gradient.addColorStop(1, `rgba(34, 197, 94, ${alpha})`);
                 }
                 
                 ctx.fillStyle = gradient;
                 ctx.shadowColor = index === 0 ? '#00ff88' : '#22c55e';
-                ctx.shadowBlur = 10;
+                ctx.shadowBlur = index === 0 ? 15 : 8;
                 ctx.beginPath();
                 ctx.roundRect(
                     segment.x * GRID_SIZE + 1,
                     segment.y * GRID_SIZE + 1,
                     GRID_SIZE - 2,
                     GRID_SIZE - 2,
-                    4
+                    5
                 );
                 ctx.fill();
                 ctx.shadowBlur = 0;
             });
             
+            // 绘制食物
             const foodGradient = ctx.createRadialGradient(
                 food.x * GRID_SIZE + GRID_SIZE / 2,
                 food.y * GRID_SIZE + GRID_SIZE / 2,
@@ -437,7 +585,7 @@
             
             ctx.fillStyle = foodGradient;
             ctx.shadowColor = '#e94560';
-            ctx.shadowBlur = 15;
+            ctx.shadowBlur = 20;
             ctx.beginPath();
             ctx.arc(
                 food.x * GRID_SIZE + GRID_SIZE / 2,
@@ -451,15 +599,19 @@
         }
         
         function update() {
+            if (isPaused) return;
+            
             direction = { ...nextDirection };
             
             const head = { x: snake[0].x + direction.x, y: snake[0].y + direction.y };
             
+            // 边界检测
             if (head.x < 0 || head.x >= TILE_COUNT || head.y < 0 || head.y >= TILE_COUNT) {
                 gameOver();
                 return;
             }
             
+            // 自身碰撞检测
             if (snake.some(segment => segment.x === head.x && segment.y === head.y)) {
                 gameOver();
                 return;
@@ -467,15 +619,14 @@
             
             snake.unshift(head);
             
+            // 吃食物
             if (head.x === food.x && head.y === food.y) {
                 score += 10;
                 scoreEl.textContent = score;
                 
-                // Speed up when eating food
                 currentSpeed = Math.max(MIN_SPEED, currentSpeed - SPEED_DECREASE);
                 speedEl.textContent = Math.floor((BASE_SPEED - currentSpeed) / SPEED_DECREASE) + 1;
                 
-                // Restart game loop with new speed
                 clearInterval(gameLoop);
                 gameLoop = setInterval(update, currentSpeed);
                 
@@ -489,6 +640,7 @@
         
         function gameOver() {
             isRunning = false;
+            isPaused = false;
             clearInterval(gameLoop);
             gameLoop = null;
             
@@ -500,7 +652,9 @@
             
             finalScoreEl.textContent = score;
             gameOverOverlay.classList.add('show');
+            pauseIndicator.classList.remove('show');
             startBtn.disabled = false;
+            pauseBtn.disabled = true;
         }
         
         function startGame() {
@@ -509,6 +663,7 @@
             initGame();
             isRunning = true;
             startBtn.disabled = true;
+            pauseBtn.disabled = false;
             gameOverOverlay.classList.remove('show');
             
             gameLoop = setInterval(update, currentSpeed);
@@ -516,15 +671,26 @@
         
         function resetGame() {
             isRunning = false;
+            isPaused = false;
             clearInterval(gameLoop);
             gameLoop = null;
             startBtn.disabled = false;
+            pauseBtn.disabled = true;
             gameOverOverlay.classList.remove('show');
+            pauseIndicator.classList.remove('show');
             initGame();
         }
         
-        function handleDirection(dir) {
+        function togglePause() {
             if (!isRunning) return;
+            
+            isPaused = !isPaused;
+            pauseBtn.textContent = isPaused ? '继续' : '暂停';
+            pauseIndicator.classList.toggle('show', isPaused);
+        }
+        
+        function handleDirection(dir) {
+            if (!isRunning || isPaused) return;
             
             switch (dir) {
                 case 'up':
@@ -542,62 +708,83 @@
             }
         }
         
-        // Keyboard controls
+        // 键盘控制
         document.addEventListener('keydown', (e) => {
             const keyMap = {
                 'ArrowUp': 'up',
                 'ArrowDown': 'down',
                 'ArrowLeft': 'left',
-                'ArrowRight': 'right'
+                'ArrowRight': 'right',
+                'w': 'up',
+                's': 'down',
+                'a': 'left',
+                'd': 'right',
+                'W': 'up',
+                'S': 'down',
+                'A': 'left',
+                'D': 'right'
             };
             
             if (keyMap[e.key]) {
                 handleDirection(keyMap[e.key]);
                 e.preventDefault();
             }
-        });
-        
-        // Touch controls - D-Pad
-        dpad.querySelectorAll('.dpad-btn').forEach(btn => {
-            btn.addEventListener('touchstart', (e) => {
-                e.preventDefault();
-                handleDirection(btn.dataset.dir);
-            });
             
-            btn.addEventListener('click', (e) => {
-                handleDirection(btn.dataset.dir);
-            });
+            // 空格键暂停
+            if (e.key === ' ' && isRunning) {
+                togglePause();
+                e.preventDefault();
+            }
         });
         
-        // Swipe controls on canvas
+        // D-Pad 触摸控制
+        dpad.querySelectorAll('.dpad-btn').forEach(btn => {
+            const handleTouch = (e) => {
+                e.preventDefault();
+                btn.classList.add('active');
+                handleDirection(btn.dataset.dir);
+                setTimeout(() => btn.classList.remove('active'), 100);
+            };
+            
+            btn.addEventListener('touchstart', handleTouch, { passive: false });
+            btn.addEventListener('mousedown', handleTouch);
+        });
+        
+        // Canvas 滑动控制
         let touchStartX = 0;
         let touchStartY = 0;
+        let touchStartTime = 0;
         
         canvas.addEventListener('touchstart', (e) => {
             touchStartX = e.touches[0].clientX;
             touchStartY = e.touches[0].clientY;
-        });
+            touchStartTime = Date.now();
+        }, { passive: true });
         
         canvas.addEventListener('touchend', (e) => {
             const dx = e.changedTouches[0].clientX - touchStartX;
             const dy = e.changedTouches[0].clientY - touchStartY;
+            const duration = Date.now() - touchStartTime;
             
-            if (Math.abs(dx) > 30 || Math.abs(dy) > 30) {
+            // 最小滑动距离
+            const minDistance = 30;
+            
+            if ((Math.abs(dx) > minDistance || Math.abs(dy) > minDistance) && duration < 500) {
                 if (Math.abs(dx) > Math.abs(dy)) {
                     handleDirection(dx > 0 ? 'right' : 'left');
                 } else {
                     handleDirection(dy > 0 ? 'down' : 'up');
                 }
             }
-        });
+        }, { passive: true });
         
+        // 按钮事件
         startBtn.addEventListener('click', startGame);
         resetBtn.addEventListener('click', resetGame);
-        playAgainBtn.addEventListener('click', () => {
-            gameOverOverlay.classList.remove('show');
-            startGame();
-        });
+        pauseBtn.addEventListener('click', togglePause);
+        playAgainBtn.addEventListener('click', startGame);
         
+        // 初始化
         initGame();
     </script>
 </body>
