@@ -9,26 +9,26 @@
 
         :root {
             color-scheme: light;
-            --bg-top: #fcf5d8;
-            --bg-bottom: #f7d986;
-            --shell: #fff8e6;
-            --shell-border: #ead39a;
-            --card: rgba(255, 249, 232, 0.92);
-            --text-main: #65552f;
-            --text-soft: #9a8654;
-            --accent: #58cc02;
-            --accent-shadow: #3d9800;
-            --light-square: #f8ebc1;
-            --dark-square: #d8f0a5;
-            --board-frame: #f4d56f;
-            --selected: rgba(255, 209, 80, 0.86);
-            --last-move: rgba(255, 240, 173, 0.95);
-            --check: rgba(255, 111, 97, 0.9);
-            --move-dot: rgba(88, 204, 2, 0.72);
-            --capture-ring: rgba(255, 126, 95, 0.75);
-            --shadow-lg: 0 22px 60px rgba(155, 110, 19, 0.18);
-            --shadow-md: 0 12px 24px rgba(155, 110, 19, 0.14);
-            --board-size: min(calc(100vw - 28px), calc(100vh - 260px), 640px);
+            --bg-top: #f5f4ef;
+            --bg-bottom: #ded8ca;
+            --shell: #f8f5ee;
+            --shell-border: #cfc6b6;
+            --card: rgba(255, 255, 255, 0.82);
+            --text-main: #302b25;
+            --text-soft: #70665a;
+            --accent: #2e2e2e;
+            --accent-shadow: #101010;
+            --light-square: #f3efe6;
+            --dark-square: #72675c;
+            --board-frame: #302a24;
+            --selected: rgba(217, 190, 130, 0.9);
+            --last-move: rgba(237, 226, 191, 0.96);
+            --check: rgba(167, 77, 77, 0.9);
+            --move-dot: rgba(42, 42, 42, 0.42);
+            --capture-ring: rgba(251, 250, 247, 0.82);
+            --shadow-lg: 0 22px 60px rgba(42, 37, 32, 0.18);
+            --shadow-md: 0 12px 24px rgba(42, 37, 32, 0.12);
+            --board-size: min(640px, calc(100vw - 56px));
             --square-size: calc(var(--board-size) / 8);
         }
 
@@ -79,7 +79,7 @@
         .play-area,
         .side-panel {
             background: var(--card);
-            border: 1px solid rgba(225, 198, 125, 0.7);
+            border: 1px solid rgba(167, 156, 141, 0.42);
             border-radius: 26px;
             box-shadow: var(--shadow-md);
         }
@@ -106,8 +106,8 @@
             text-decoration: none;
             font-weight: 800;
             color: var(--text-main);
-            background: #fff4cf;
-            box-shadow: inset 0 -3px 0 rgba(210, 177, 86, 0.75);
+            background: #ede6d8;
+            box-shadow: inset 0 -3px 0 rgba(130, 118, 103, 0.65);
         }
 
         .brand {
@@ -128,6 +128,7 @@
         }
 
         .board-stage {
+            width: 100%;
             display: grid;
             place-items: center;
             gap: 14px;
@@ -145,7 +146,7 @@
             padding: 10px 12px;
             border-radius: 20px;
             background: rgba(255, 250, 238, 0.95);
-            border: 1px solid rgba(228, 205, 144, 0.75);
+            border: 1px solid rgba(167, 156, 141, 0.36);
         }
 
         .capture-label {
@@ -161,19 +162,18 @@
             align-items: center;
             flex-wrap: wrap;
             gap: 4px;
-            font-size: 1.45rem;
         }
 
         .board-frame {
-            width: calc(var(--board-size) + 28px);
-            height: calc(var(--board-size) + 28px);
+            width: min(100%, calc(var(--board-size) + 28px));
+            aspect-ratio: 1;
             padding: 14px;
             border-radius: 30px;
             background:
-                linear-gradient(180deg, #ffe9a7 0%, var(--board-frame) 100%);
+                linear-gradient(180deg, #60564c 0%, var(--board-frame) 100%);
             box-shadow:
-                inset 0 -5px 0 rgba(210, 167, 58, 0.95),
-                0 16px 28px rgba(176, 126, 22, 0.18);
+                inset 0 -5px 0 rgba(10, 10, 10, 0.42),
+                0 16px 28px rgba(42, 37, 32, 0.18);
         }
 
         #chessboard {
@@ -240,10 +240,60 @@
         .piece {
             position: relative;
             z-index: 1;
-            font-size: calc(var(--square-size) * 0.68);
+            width: calc(var(--square-size) * 0.78);
+            height: calc(var(--square-size) * 0.78);
+            display: grid;
+            place-items: center;
+            font-size: calc(var(--square-size) * 0.7);
             line-height: 1;
-            filter: drop-shadow(0 2px 1px rgba(0, 0, 0, 0.15));
-            transform: translateY(-1px);
+            font-family: "Times New Roman", "Noto Serif", serif;
+            font-weight: 700;
+            border-radius: 18%;
+            transform: translateY(-2%);
+            text-shadow:
+                0 1px 0 rgba(255, 255, 255, 0.55),
+                0 -1px 0 rgba(0, 0, 0, 0.18),
+                0 5px 8px rgba(0, 0, 0, 0.25);
+        }
+
+        .piece::before {
+            content: "";
+            position: absolute;
+            inset: 12% 10% 10%;
+            border-radius: 24%;
+            z-index: -1;
+            box-shadow:
+                inset 0 2px 4px rgba(255, 255, 255, 0.45),
+                inset 0 -8px 10px rgba(0, 0, 0, 0.22),
+                0 7px 10px rgba(0, 0, 0, 0.18);
+        }
+
+        .piece.white {
+            color: #fffdf8;
+            filter: drop-shadow(0 3px 4px rgba(0, 0, 0, 0.16));
+        }
+
+        .piece.white::before {
+            background:
+                radial-gradient(circle at 30% 24%, rgba(255, 255, 255, 0.98), rgba(255, 255, 255, 0.55) 34%, transparent 36%),
+                linear-gradient(180deg, #ffffff 0%, #ddd8cc 58%, #bdb5a6 100%);
+            border: 1px solid rgba(136, 126, 112, 0.35);
+        }
+
+        .piece.black {
+            color: #181614;
+            text-shadow:
+                0 1px 0 rgba(255, 255, 255, 0.12),
+                0 -1px 0 rgba(0, 0, 0, 0.35),
+                0 5px 8px rgba(0, 0, 0, 0.3);
+            filter: drop-shadow(0 3px 5px rgba(0, 0, 0, 0.28));
+        }
+
+        .piece.black::before {
+            background:
+                radial-gradient(circle at 30% 22%, rgba(255, 255, 255, 0.32), rgba(255, 255, 255, 0.08) 26%, transparent 28%),
+                linear-gradient(180deg, #55504b 0%, #25211d 58%, #090909 100%);
+            border: 1px solid rgba(255, 255, 255, 0.08);
         }
 
         .side-panel {
@@ -256,7 +306,7 @@
         .controls-card,
         .history-card {
             background: rgba(255, 251, 241, 0.92);
-            border: 1px solid rgba(228, 205, 144, 0.8);
+            border: 1px solid rgba(167, 156, 141, 0.36);
             border-radius: 20px;
             padding: 14px;
         }
@@ -282,7 +332,7 @@
             gap: 10px;
             padding: 10px 14px;
             border-radius: 999px;
-            background: #fff5d7;
+            background: #efe9dd;
             font-weight: 800;
         }
 
@@ -290,7 +340,7 @@
             width: 14px;
             height: 14px;
             border-radius: 50%;
-            border: 2px solid rgba(109, 87, 42, 0.7);
+            border: 2px solid rgba(72, 64, 56, 0.7);
             background: #ffffff;
         }
 
@@ -306,7 +356,7 @@
             justify-content: center;
             padding: 10px 12px;
             border-radius: 16px;
-            background: #fff8e7;
+            background: #f1ece2;
             color: var(--text-soft);
             font-weight: 800;
             text-align: center;
@@ -350,8 +400,8 @@
 
         .btn-secondary {
             color: var(--text-main);
-            background: #fff1c0;
-            box-shadow: inset 0 -4px 0 #deb954;
+            background: #e9e2d3;
+            box-shadow: inset 0 -4px 0 #bdb19d;
         }
 
         .btn-danger {
@@ -382,7 +432,7 @@
         .move {
             padding: 7px 10px;
             border-radius: 999px;
-            background: #fff4cf;
+            background: #ece5d8;
             color: var(--text-main);
             font-weight: 700;
             font-size: 0.92rem;
@@ -414,7 +464,7 @@
         .modal-content {
             width: min(420px, 100%);
             border-radius: 24px;
-            background: #fffaf0;
+            background: #f8f5ee;
             border: 1px solid rgba(228, 205, 144, 0.9);
             box-shadow: var(--shadow-lg);
             padding: 20px;
@@ -439,10 +489,16 @@
             place-items: center;
             border: none;
             border-radius: 18px;
-            background: #fff1c8;
-            box-shadow: inset 0 -4px 0 #ddb65b;
-            font-size: 2.2rem;
+            background: #ebe3d4;
+            box-shadow: inset 0 -4px 0 #b6a893;
+            font-size: 1rem;
             cursor: pointer;
+        }
+
+        .promotion-piece .piece {
+            width: 46px;
+            height: 46px;
+            font-size: 2rem;
         }
 
         @media (hover: hover) {
@@ -455,10 +511,6 @@
         }
 
         @media (max-width: 980px) {
-            :root {
-                --board-size: min(calc(100vw - 28px), calc(100vh - 360px), 92vw);
-            }
-
             .layout {
                 grid-template-columns: 1fr;
             }
@@ -474,10 +526,6 @@
         }
 
         @media (max-width: 720px) {
-            :root {
-                --board-size: min(calc(100vw - 28px), calc(100vh - 330px), 100vw);
-            }
-
             .app-shell {
                 padding: 12px;
                 border-radius: 24px;
@@ -508,10 +556,6 @@
         }
 
         @media (max-width: 420px) {
-            :root {
-                --board-size: min(calc(100vw - 24px), calc(100vh - 318px));
-            }
-
             body {
                 padding-inline: 10px;
             }
@@ -530,8 +574,7 @@
             }
 
             .board-frame {
-                width: calc(var(--board-size) + 18px);
-                height: calc(var(--board-size) + 18px);
+                width: min(100%, calc(var(--board-size) + 18px));
                 padding: 9px;
                 border-radius: 24px;
             }
@@ -621,8 +664,7 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
     <script>
-        const PIECES = {
-            K: "♔", Q: "♕", R: "♖", B: "♗", N: "♘", P: "♙",
+        const PIECE_SYMBOLS = {
             k: "♚", q: "♛", r: "♜", b: "♝", n: "♞", p: "♟"
         };
 
@@ -644,6 +686,17 @@
         const capturedWhiteEl = document.getElementById("capturedWhite");
         const promotionModal = document.getElementById("promotionModal");
         const promotionPieces = document.getElementById("promotionPieces");
+        const playAreaEl = document.querySelector(".play-area");
+        const topbarEl = document.querySelector(".topbar");
+        const capturedStripEl = document.querySelector(".captured-strip");
+
+        function createPieceElement(color, type) {
+            const pieceEl = document.createElement("span");
+            pieceEl.className = `piece ${color === "w" ? "white" : "black"}`;
+            pieceEl.textContent = PIECE_SYMBOLS[type];
+            pieceEl.setAttribute("aria-hidden", "true");
+            return pieceEl;
+        }
 
         function getSquareName(row, col) {
             const actualRow = isFlipped ? 7 - row : row;
@@ -690,10 +743,7 @@
                     }
 
                     if (piece) {
-                        const pieceEl = document.createElement("span");
-                        const pieceChar = piece.color === "w" ? piece.type.toUpperCase() : piece.type.toLowerCase();
-                        pieceEl.className = "piece";
-                        pieceEl.textContent = PIECES[pieceChar];
+                        const pieceEl = createPieceElement(piece.color, piece.type);
                         squareEl.appendChild(pieceEl);
                     }
 
@@ -770,8 +820,16 @@
         }
 
         function updateCapturedDisplay() {
-            capturedWhiteEl.innerHTML = capturedPieces.w.map((piece) => PIECES[piece.toLowerCase()]).join("");
-            capturedBlackEl.innerHTML = capturedPieces.b.map((piece) => PIECES[piece.toUpperCase()]).join("");
+            capturedWhiteEl.innerHTML = "";
+            capturedBlackEl.innerHTML = "";
+
+            capturedPieces.w.forEach((piece) => {
+                capturedWhiteEl.appendChild(createPieceElement("w", piece));
+            });
+
+            capturedPieces.b.forEach((piece) => {
+                capturedBlackEl.appendChild(createPieceElement("b", piece));
+            });
         }
 
         function updateMoveHistory() {
@@ -854,7 +912,7 @@
                 const button = document.createElement("button");
                 button.type = "button";
                 button.className = "promotion-piece";
-                button.textContent = PIECES[piece];
+                button.appendChild(createPieceElement(color, piece.toLowerCase()));
                 button.addEventListener("click", () => {
                     promotionModal.classList.remove("show");
                     makeMove(from, to, piece.toLowerCase());
@@ -890,6 +948,26 @@
             renderBoard();
         }
 
+        function updateBoardSize() {
+            const viewportWidth = window.innerWidth;
+            const viewportHeight = window.innerHeight;
+            const playAreaStyles = getComputedStyle(playAreaEl);
+            const playAreaPaddingX = parseFloat(playAreaStyles.paddingLeft) + parseFloat(playAreaStyles.paddingRight);
+            const availableWidth = Math.min(
+                640,
+                viewportWidth - 24,
+                playAreaEl.clientWidth - playAreaPaddingX
+            );
+
+            const topbarHeight = topbarEl.offsetHeight;
+            const capturedHeight = capturedStripEl.offsetHeight;
+            const verticalChrome = topbarHeight + capturedHeight + 150;
+            const availableHeight = viewportHeight - verticalChrome;
+            const nextBoardSize = Math.max(240, Math.min(availableWidth, availableHeight > 0 ? availableHeight : availableWidth));
+
+            document.documentElement.style.setProperty("--board-size", `${Math.floor(nextBoardSize)}px`);
+        }
+
         document.getElementById("undoBtn").addEventListener("click", undoMove);
         document.getElementById("newGameBtn").addEventListener("click", newGame);
         document.getElementById("flipBtn").addEventListener("click", flipBoard);
@@ -900,6 +978,8 @@
             }
         });
 
+        window.addEventListener("resize", updateBoardSize, { passive: true });
+        updateBoardSize();
         syncView();
     </script>
 </body>
