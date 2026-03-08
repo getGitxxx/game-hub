@@ -251,16 +251,25 @@
         }
 
         isOnGround() {
-          return this.y >= this.game.groundY - this.getBounds().height - 0.1;
+          return this.y >= this.getGroundTop(this.ducking) - 0.1;
+        }
+
+        getPoseHeight(ducking = this.ducking) {
+          const poseMask = ducking ? DINO_DUCK_1 : DINO_RUN_1;
+          return maskBounds(poseMask, this.game.pixel).height;
+        }
+
+        getGroundTop(ducking = this.ducking) {
+          return this.game.groundY - this.getPoseHeight(ducking);
         }
 
         setDuck(value) {
           const next = Boolean(value);
           if (this.ducking === next) return;
           const wasOnGround = this.isOnGround();
-          const oldH = this.getBounds().height;
+          const oldH = this.getPoseHeight(this.ducking);
           this.ducking = next;
-          const newH = this.getBounds().height;
+          const newH = this.getPoseHeight(this.ducking);
           if (wasOnGround) {
             this.y += oldH - newH;
           }
