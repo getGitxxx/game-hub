@@ -36,27 +36,29 @@
         
         .game-wrapper {
             display: flex;
+            flex-direction: column;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .play-row {
+            display: flex;
             gap: 15px;
             align-items: flex-start;
         }
-        
+
         .game-container {
             background: rgba(255, 255, 255, 0.05);
             border-radius: 12px;
             padding: 10px;
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
             border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        
-        .info-panel {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
+            overflow: hidden;
         }
 
         .stats-strip {
             display: flex;
-            flex-direction: column;
+            flex-direction: row;
             gap: 10px;
         }
         
@@ -85,6 +87,13 @@
             font-size: 0.7rem;
             margin-bottom: 5px;
             text-align: center;
+        }
+
+        .next-box {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
         }
         
         #nextCanvas {
@@ -226,24 +235,16 @@
         }
 
         @media (max-width: 600px) {
-            :root {
-                --mobile-pad: 8px;
-                --mobile-controls-h: 144px;
-                --mobile-actions-h: 44px;
-            }
-
             body {
                 min-height: 100dvh;
-                height: 100dvh;
                 justify-content: flex-start;
-                overflow: hidden;
+                overflow-x: hidden;
                 gap: 8px;
-                padding: var(--mobile-pad) var(--mobile-pad)
-                    calc(var(--mobile-controls-h) + var(--mobile-actions-h) + env(safe-area-inset-bottom, 0px) + 18px);
+                padding: 8px 8px calc(8px + env(safe-area-inset-bottom, 0px));
             }
 
             h1 {
-                font-size: 0.9rem;
+                font-size: 0.95rem;
                 line-height: 1;
                 letter-spacing: 1.5px;
                 margin: 0;
@@ -256,20 +257,11 @@
 
             .game-wrapper {
                 width: 100%;
-                flex: 1;
-                min-height: 0;
                 display: flex;
                 flex-direction: column;
                 align-items: center;
                 gap: 8px;
-            }
-
-            .info-panel {
-                width: 100%;
-                display: flex;
-                flex-direction: column;
-                gap: 8px;
-                align-items: center;
+                max-width: 360px;
             }
 
             .stats-strip {
@@ -277,6 +269,14 @@
                 display: grid;
                 grid-template-columns: repeat(3, minmax(0, 1fr));
                 gap: 6px;
+            }
+
+            .play-row {
+                width: 100%;
+                display: flex;
+                align-items: stretch;
+                gap: 8px;
+                min-height: 0;
             }
 
             .info-box {
@@ -299,53 +299,52 @@
             }
 
             .game-container {
-                width: 100%;
                 flex: 1;
                 min-height: 0;
-                padding: 4px;
+                min-width: 0;
+                padding: 6px;
                 display: flex;
                 justify-content: center;
                 align-items: center;
                 border: 1px solid rgba(0, 255, 136, 0.35);
                 border-radius: 10px;
                 background: rgba(5, 15, 25, 0.9);
+                overflow: hidden;
             }
 
             #gameCanvas {
-                height: clamp(50dvh, 56dvh, 60dvh);
+                max-width: 100%;
+                max-height: 100%;
                 width: auto;
-                max-width: calc(100vw - 16px);
+                height: clamp(260px, 42dvh, 300px);
                 aspect-ratio: 1 / 2;
                 border-radius: 8px;
                 border: 1px solid rgba(255, 255, 255, 0.35);
             }
 
             .next-box {
-                width: 100%;
-                max-width: 220px;
+                width: 86px;
+                flex: 0 0 86px;
+                padding: 6px 4px;
                 display: flex;
-                align-items: center;
-                justify-content: space-between;
-                padding: 6px 10px;
-                margin: 0 auto;
+                flex-direction: column;
+                justify-content: center;
+                gap: 4px;
             }
 
             #nextCanvas {
-                width: 60px;
-                height: 60px;
+                width: 64px;
+                height: 64px;
                 border: 1px solid rgba(255, 255, 255, 0.25);
             }
 
             .controls {
-                position: fixed;
-                left: var(--mobile-pad);
-                right: var(--mobile-pad);
-                bottom: calc(var(--mobile-controls-h) + env(safe-area-inset-bottom, 0px) + 8px);
+                width: 100%;
+                max-width: 360px;
                 margin: 0;
                 display: grid;
                 grid-template-columns: 1fr 1fr;
-                gap: 8px;
-                z-index: 20;
+                gap: 6px;
             }
 
             button {
@@ -356,18 +355,15 @@
             }
 
             .touch-controls {
-                position: fixed;
-                left: var(--mobile-pad);
-                right: var(--mobile-pad);
-                bottom: calc(env(safe-area-inset-bottom, 0px) + 6px);
-                height: var(--mobile-controls-h);
+                width: 100%;
+                max-width: 360px;
+                height: auto;
                 margin: 0;
                 display: grid !important;
                 grid-template-columns: repeat(3, minmax(0, 1fr));
-                grid-template-rows: 64px 72px;
-                gap: 8px;
+                grid-template-rows: 52px 58px;
+                gap: 6px;
                 align-items: stretch;
-                z-index: 30;
             }
 
             .touch-row {
@@ -377,9 +373,9 @@
             .touch-btn {
                 width: 100%;
                 height: 100%;
-                min-height: 60px;
-                font-size: 1.5rem;
-                border-radius: 12px;
+                min-height: 50px;
+                font-size: 1.25rem;
+                border-radius: 10px;
                 border: 2px solid rgba(255, 255, 255, 0.3);
                 background: rgba(255, 255, 255, 0.12);
                 touch-action: manipulation;
@@ -403,11 +399,11 @@
             .touch-btn[data-action="rotate"] {
                 grid-column: 3;
                 grid-row: 1;
-                width: 60px;
-                height: 60px;
+                width: 52px;
+                height: 52px;
                 justify-self: end;
                 align-self: end;
-                font-size: 1.3rem;
+                font-size: 1.15rem;
             }
 
             .touch-btn[data-action="drop"] {
@@ -429,28 +425,28 @@
     <h1>TETRIS</h1>
     
     <div class="game-wrapper">
-        <div class="game-container">
-            <canvas id="gameCanvas" width="240" height="480"></canvas>
-        </div>
-        
-        <div class="info-panel">
-            <div class="stats-strip">
-                <div class="info-box">
-                    <div class="info-label">分数</div>
-                    <div class="info-value" id="score">0</div>
-                </div>
-                
-                <div class="info-box">
-                    <div class="info-label">等级</div>
-                    <div class="info-value" id="level">1</div>
-                </div>
-                
-                <div class="info-box">
-                    <div class="info-label">消行</div>
-                    <div class="info-value" id="lines">0</div>
-                </div>
+        <div class="stats-strip">
+            <div class="info-box">
+                <div class="info-label">分数</div>
+                <div class="info-value" id="score">0</div>
             </div>
             
+            <div class="info-box">
+                <div class="info-label">等级</div>
+                <div class="info-value" id="level">1</div>
+            </div>
+            
+            <div class="info-box">
+                <div class="info-label">消行</div>
+                <div class="info-value" id="lines">0</div>
+            </div>
+        </div>
+
+        <div class="play-row">
+            <div class="game-container">
+                <canvas id="gameCanvas" width="240" height="480"></canvas>
+            </div>
+
             <div class="info-box next-box">
                 <div class="next-label">下一个</div>
                 <canvas id="nextCanvas" width="100" height="100"></canvas>
