@@ -603,7 +603,7 @@
                     }
 
                     // Mouse events
-                    cell.addEventListener('click', () => handleClick(i, j));
+                    cell.addEventListener('click', () => handleClick(i, j, { source: 'mouse' }));
                     cell.addEventListener('contextmenu', (e) => {
                         e.preventDefault();
                         handleRightClick(i, j);
@@ -651,15 +651,20 @@
                 // Short tap = reveal
                 clearTimeout(longPressTimer);
                 longPressTimer = null;
-                handleClick(row, col);
+                handleClick(row, col, { source: 'touch' });
             }
         }
 
-        function handleClick(row, col) {
-            if (touchClickSuppressed) {
+        function handleClick(row, col, { source = 'mouse' } = {}) {
+            if (source !== 'touch' && touchClickSuppressed) {
                 touchClickSuppressed = false;
                 return;
             }
+
+            if (source === 'touch') {
+                touchClickSuppressed = true;
+            }
+
             if (gameOver || flagged[row][col] || revealed[row][col]) return;
 
             if (!gameStarted) {
