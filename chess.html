@@ -416,6 +416,57 @@
             gap: 10px;
         }
 
+        .control-group {
+            display: grid;
+            gap: 8px;
+        }
+
+        .control-label {
+            font-size: 0.78rem;
+            font-weight: 800;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--text-soft);
+        }
+
+        .segmented-control {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 8px;
+        }
+
+        .segmented-btn {
+            min-height: 44px;
+            border: none;
+            border-radius: 14px;
+            font: inherit;
+            font-weight: 800;
+            color: var(--text-main);
+            background: #edf7d0;
+            box-shadow: inset 0 -4px 0 #c7df91;
+            cursor: pointer;
+            transition: transform 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease, opacity 0.15s ease;
+        }
+
+        .segmented-btn.is-active {
+            color: #ffffff;
+            background: var(--accent);
+            box-shadow: inset 0 -4px 0 var(--accent-shadow);
+        }
+
+        .segmented-btn:disabled {
+            cursor: not-allowed;
+            opacity: 0.45;
+            filter: grayscale(0.15);
+        }
+
+        .mode-hint {
+            min-height: 20px;
+            color: var(--text-soft);
+            font-size: 0.84rem;
+            line-height: 1.4;
+        }
+
         .btn {
             min-height: 50px;
             border: none;
@@ -680,6 +731,21 @@
                     </section>
 
                     <section class="controls-card">
+                        <div class="control-group">
+                            <div class="control-label">对战模式</div>
+                            <div class="segmented-control">
+                                <button class="segmented-btn is-active" id="modeHumanBtn" type="button">双人对战</button>
+                                <button class="segmented-btn" id="modeAiBtn" type="button">AI 对战</button>
+                            </div>
+                        </div>
+                        <div class="control-group">
+                            <div class="control-label">执棋方</div>
+                            <div class="segmented-control">
+                                <button class="segmented-btn is-active" id="playWhiteBtn" type="button">执白</button>
+                                <button class="segmented-btn" id="playBlackBtn" type="button">执黑</button>
+                            </div>
+                        </div>
+                        <div class="mode-hint" id="modeHint">当前为双人对战，双方都可直接操作棋盘。</div>
                         <button class="btn btn-primary" id="newGameBtn" type="button">新游戏</button>
                         <button class="btn btn-secondary" id="undoBtn" type="button">悔棋</button>
                         <button class="btn btn-danger" id="flipBtn" type="button">翻转棋盘</button>
@@ -756,13 +822,19 @@
             n: `
                 <svg class="piece-svg" viewBox="0 0 72 72" focusable="false">
                     <ellipse class="piece-shadow" cx="36" cy="61" rx="18" ry="4.5"></ellipse>
-                    <path class="piece-main" d="M50.5 17.2C43.6 14.2 36.1 17.4 31.8 22.7C28.6 26.6 27.5 31.7 28 37L21.6 43.4C19.1 45.9 20.8 50.2 24.3 50.2H28.7V54.1C28.7 57.4 31.3 60 34.6 60H48.7C52 60 54.6 57.4 54.6 54.1V38.2C54.6 29.8 53.4 20.4 50.5 17.2Z"></path>
-                    <path class="piece-shade" d="M48.8 21.5C45.2 20.3 40.9 22.5 37.8 26.1C35 29.5 34.2 34 34.2 38.5V45.1H47.6C49.8 45.1 51.5 43.4 51.5 41.2V28.8C51.5 25.6 50.4 23 48.8 21.5Z"></path>
-                    <path class="piece-detail" d="M36.4 27.8C39.1 24.8 43.1 23.8 46.1 24.9"></path>
-                    <path class="piece-detail" d="M33 39.5C35.8 38.1 39.1 38.2 41.8 39.8"></path>
-                    <circle class="piece-mark" cx="42.7" cy="30.6" r="2"></circle>
-                    <path class="piece-base" d="M21 56H54.5C56.7 56 58.5 57.8 58.5 60C58.5 62.2 56.7 64 54.5 64H21C18.8 64 17 62.2 17 60C17 57.8 18.8 56 21 56Z"></path>
-                    <path class="piece-highlight" d="M31.7 25.9C32.9 22.2 35.8 19.4 38.8 18.6C34.6 18.1 30.2 21.6 29.8 25.9C29.4 29.5 30.2 32.6 32.1 35.1C31.3 31.8 30.8 29.2 31.7 25.9Z"></path>
+                    
+                    <path class="piece-main" d="M48 56V32C48 22 42 16 34 16C30 16 26 18 26 25L18 32C15 34 15 39 18 41L26 43V56H48Z"></path>
+                    
+                    <path class="piece-main" d="M28 20L25.5 14C24.5 12 27.5 11 29 13L32 18"></path>
+                    
+                    <path class="piece-shade" d="M40 19C45 19 45 25 45 32V56H48V32C48 22 42 16 34 16C32 16 31 16.5 30 17C35 17 40 22 40 32V45C40 48 38 51 35 51L32 51C35 51 38 48 38 45V19Z"></path>
+                    
+                    <circle class="piece-mark" cx="31" cy="28" r="2.2"></circle>
+                    <path class="piece-detail" d="M32 41C36 41 42 39 42 33"></path>
+                    
+                    <path class="piece-base" d="M18 56H54C56.2 56 58 57.8 58 60C58 62.2 56.2 64 54 64H18C15.8 64 14 62.2 14 60C14 57.8 15.8 56 18 56Z"></path>
+                    
+                    <path class="piece-highlight" d="M34 19C30 19 28 21 28 25C28 23 30 21 34 21C38 21 42 25 42 31C42 28 39 20 34 19Z"></path>
                 </svg>
             `,
             p: `
@@ -785,6 +857,11 @@
         let capturedPieces = { w: [], b: [] };
         let moveHistory = [];
         let pendingPromotion = null;
+        let gameMode = "human";
+        let humanColor = "w";
+        let aiThinking = false;
+        let aiTimer = null;
+        let aiRequestId = 0;
 
         const boardEl = document.getElementById("chessboard");
         const turnDot = document.getElementById("turnDot");
@@ -798,6 +875,47 @@
         const playAreaEl = document.querySelector(".play-area");
         const topbarEl = document.querySelector(".topbar");
         const capturedStripEl = document.querySelector(".captured-strip");
+        const modeHint = document.getElementById("modeHint");
+        const modeHumanBtn = document.getElementById("modeHumanBtn");
+        const modeAiBtn = document.getElementById("modeAiBtn");
+        const playWhiteBtn = document.getElementById("playWhiteBtn");
+        const playBlackBtn = document.getElementById("playBlackBtn");
+
+        const PIECE_VALUES = {
+            p: 100,
+            n: 320,
+            b: 330,
+            r: 500,
+            q: 900,
+            k: 20000
+        };
+
+        const CENTRAL_SQUARES = new Set(["d4", "e4", "d5", "e5"]);
+
+        function isAiMode() {
+            return gameMode === "ai";
+        }
+
+        function getAiColor() {
+            return humanColor === "w" ? "b" : "w";
+        }
+
+        function isAITurn() {
+            return isAiMode() && game.turn() === getAiColor();
+        }
+
+        function isInteractionLocked() {
+            return pendingPromotion || aiThinking;
+        }
+
+        function cancelScheduledAiMove() {
+            aiRequestId += 1;
+            aiThinking = false;
+            if (aiTimer) {
+                clearTimeout(aiTimer);
+                aiTimer = null;
+            }
+        }
 
         function createPieceElement(color, type) {
             const pieceEl = document.createElement("span");
@@ -856,6 +974,7 @@
                         squareEl.appendChild(pieceEl);
                     }
 
+                    squareEl.disabled = aiThinking;
                     squareEl.addEventListener("pointerup", (event) => {
                         event.preventDefault();
                         handleSquareClick(squareName);
@@ -866,9 +985,12 @@
         }
 
         function handleSquareClick(square) {
-            if (pendingPromotion) return;
+            if (isInteractionLocked()) return;
 
             const piece = game.get(square);
+            const allowHumanMove = !isAiMode() || game.turn() === humanColor;
+
+            if (!allowHumanMove) return;
 
             if (selectedSquare) {
                 if (validMoves.includes(square)) {
@@ -885,7 +1007,7 @@
                     return;
                 }
 
-                if (piece && piece.color === game.turn()) {
+                if (piece && piece.color === game.turn() && (!isAiMode() || piece.color === humanColor)) {
                     selectedSquare = square;
                     validMoves = game.moves({ square, verbose: true }).map((move) => move.to);
                     renderBoard();
@@ -898,7 +1020,7 @@
                 return;
             }
 
-            if (piece && piece.color === game.turn()) {
+            if (piece && piece.color === game.turn() && (!isAiMode() || piece.color === humanColor)) {
                 selectedSquare = square;
                 validMoves = game.moves({ square, verbose: true }).map((move) => move.to);
                 renderBoard();
@@ -954,7 +1076,198 @@
             const whiteTurn = game.turn() === "w";
             turnDot.className = "turn-dot";
             if (!whiteTurn) turnDot.classList.add("black-turn");
-            turnText.textContent = whiteTurn ? "白方" : "黑方";
+            const sideText = whiteTurn ? "白方" : "黑方";
+
+            if (isAiMode() && game.turn() === getAiColor()) {
+                turnText.textContent = `${sideText} · AI`;
+                return;
+            }
+
+            if (isAiMode() && game.turn() === humanColor) {
+                turnText.textContent = `${sideText} · 你`;
+                return;
+            }
+
+            turnText.textContent = sideText;
+        }
+
+        function evaluateBoardState(chess, aiColor) {
+            if (chess.in_checkmate()) {
+                return chess.turn() === aiColor ? -100000 : 100000;
+            }
+
+            if (chess.in_draw() || chess.in_stalemate() || chess.in_threefold_repetition() || chess.insufficient_material()) {
+                return 0;
+            }
+
+            let score = 0;
+            const boardState = chess.board();
+
+            for (let row = 0; row < boardState.length; row++) {
+                for (let col = 0; col < boardState[row].length; col++) {
+                    const piece = boardState[row][col];
+                    if (!piece) continue;
+
+                    const square = String.fromCharCode(97 + col) + (8 - row);
+                    const baseValue = PIECE_VALUES[piece.type] || 0;
+                    const sign = piece.color === aiColor ? 1 : -1;
+                    score += sign * baseValue;
+
+                    if (piece.type !== "k") {
+                        const distanceFromCenter = Math.abs(3.5 - row) + Math.abs(3.5 - col);
+                        score += sign * Math.round((4.5 - distanceFromCenter) * 6);
+                    }
+
+                    if (CENTRAL_SQUARES.has(square)) {
+                        score += sign * 18;
+                    }
+                }
+            }
+
+            const mobility = chess.moves().length;
+            score += (chess.turn() === aiColor ? 1 : -1) * mobility * 2;
+
+            if (chess.in_check()) {
+                score += chess.turn() === aiColor ? -35 : 35;
+            }
+
+            return score;
+        }
+
+        function evaluateMoveCandidate(move, aiColor) {
+            let score = 0;
+
+            if (move.captured) {
+                score += (PIECE_VALUES[move.captured] || 0) * 1.25 - (PIECE_VALUES[move.piece] || 0) * 0.05;
+            }
+
+            if (move.promotion) {
+                score += (PIECE_VALUES[move.promotion] || 0) - PIECE_VALUES.p;
+            }
+
+            if (move.flags.includes("k") || move.flags.includes("q")) {
+                score += 45;
+            }
+
+            if (CENTRAL_SQUARES.has(move.to)) {
+                score += 20;
+            }
+
+            const next = new Chess(game.fen());
+            next.move({ from: move.from, to: move.to, promotion: move.promotion });
+            score += evaluateBoardState(next, aiColor);
+
+            return score;
+        }
+
+        function chooseBestAiMove() {
+            const aiColor = getAiColor();
+            const moves = game.moves({ verbose: true });
+
+            if (!moves.length) return null;
+
+            let bestScore = -Infinity;
+            let bestMove = null;
+
+            moves.forEach((move) => {
+                const replyPosition = new Chess(game.fen());
+                replyPosition.move({ from: move.from, to: move.to, promotion: move.promotion });
+
+                let moveScore = evaluateMoveCandidate(move, aiColor);
+                const replies = replyPosition.moves({ verbose: true });
+
+                if (replies.length) {
+                    let worstReply = Infinity;
+
+                    replies.forEach((reply) => {
+                        const response = new Chess(replyPosition.fen());
+                        response.move({ from: reply.from, to: reply.to, promotion: reply.promotion });
+                        const responseScore = evaluateBoardState(response, aiColor);
+                        worstReply = Math.min(worstReply, responseScore);
+                    });
+
+                    moveScore += worstReply * 0.92;
+                }
+
+                if (moveScore > bestScore || (moveScore === bestScore && Math.random() > 0.5)) {
+                    bestScore = moveScore;
+                    bestMove = move;
+                }
+            });
+
+            return bestMove;
+        }
+
+        function updateModeControls() {
+            modeHumanBtn.classList.toggle("is-active", gameMode === "human");
+            modeAiBtn.classList.toggle("is-active", gameMode === "ai");
+            playWhiteBtn.classList.toggle("is-active", humanColor === "w");
+            playBlackBtn.classList.toggle("is-active", humanColor === "b");
+            playWhiteBtn.disabled = gameMode === "human";
+            playBlackBtn.disabled = gameMode === "human";
+
+            if (gameMode === "human") {
+                modeHint.textContent = "当前为双人对战，双方都可直接操作棋盘。";
+                return;
+            }
+
+            modeHint.textContent = humanColor === "w"
+                ? "当前为 AI 对战，你执白先手，AI 执黑。"
+                : "当前为 AI 对战，你执黑后手，AI 会自动先走白棋。";
+        }
+
+        function scheduleAiMove() {
+            cancelScheduledAiMove();
+
+            if (!isAITurn() || game.game_over()) {
+                syncView();
+                return;
+            }
+
+            aiThinking = true;
+            selectedSquare = null;
+            validMoves = [];
+            syncView();
+            setStatus("AI 思考中…", "alert");
+
+            const requestId = aiRequestId;
+            aiTimer = window.setTimeout(() => {
+                aiTimer = null;
+
+                if (requestId !== aiRequestId || !isAITurn() || game.game_over()) {
+                    aiThinking = false;
+                    syncView();
+                    return;
+                }
+
+                const move = chooseBestAiMove();
+                aiThinking = false;
+
+                if (!move) {
+                    syncView();
+                    return;
+                }
+
+                makeMove(move.from, move.to, move.promotion, true);
+            }, 420);
+        }
+
+        function setGameMode(nextMode) {
+            if (gameMode === nextMode) return;
+            gameMode = nextMode;
+            newGame();
+        }
+
+        function setHumanColor(nextColor) {
+            if (humanColor === nextColor) return;
+            humanColor = nextColor;
+
+            if (isAiMode()) {
+                newGame();
+                return;
+            }
+
+            updateModeControls();
         }
 
         function checkGameStatus() {
@@ -993,6 +1306,7 @@
 
         function syncView() {
             moveHistory = game.history();
+            updateModeControls();
             rebuildCapturedPieces();
             refreshLastMove();
             renderBoard();
@@ -1002,7 +1316,7 @@
             checkGameStatus();
         }
 
-        function makeMove(from, to, promotion = null) {
+        function makeMove(from, to, promotion = null, skipAiSchedule = false) {
             const move = game.move(promotion ? { from, to, promotion } : { from, to });
             if (!move) return;
 
@@ -1010,6 +1324,10 @@
             validMoves = [];
             pendingPromotion = null;
             syncView();
+
+            if (!skipAiSchedule && isAITurn() && !game.game_over()) {
+                scheduleAiMove();
+            }
         }
 
         function showPromotionDialog(from, to, color) {
@@ -1034,13 +1352,25 @@
 
         function undoMove() {
             if (!game.history().length || pendingPromotion) return;
+
+            cancelScheduledAiMove();
             game.undo();
+
+            if (isAiMode() && game.history().length && game.turn() !== humanColor) {
+                game.undo();
+            }
+
             selectedSquare = null;
             validMoves = [];
             syncView();
+
+            if (isAITurn() && !game.game_over()) {
+                scheduleAiMove();
+            }
         }
 
         function newGame() {
+            cancelScheduledAiMove();
             game = new Chess();
             selectedSquare = null;
             validMoves = [];
@@ -1050,6 +1380,10 @@
             pendingPromotion = null;
             promotionModal.classList.remove("show");
             syncView();
+
+            if (isAITurn()) {
+                scheduleAiMove();
+            }
         }
 
         function flipBoard() {
@@ -1084,6 +1418,10 @@
         document.getElementById("undoBtn").addEventListener("click", undoMove);
         document.getElementById("newGameBtn").addEventListener("click", newGame);
         document.getElementById("flipBtn").addEventListener("click", flipBoard);
+        modeHumanBtn.addEventListener("click", () => setGameMode("human"));
+        modeAiBtn.addEventListener("click", () => setGameMode("ai"));
+        playWhiteBtn.addEventListener("click", () => setHumanColor("w"));
+        playBlackBtn.addEventListener("click", () => setHumanColor("b"));
         promotionModal.addEventListener("click", (event) => {
             if (event.target === promotionModal) {
                 promotionModal.classList.remove("show");
