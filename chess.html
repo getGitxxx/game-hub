@@ -9,25 +9,31 @@
 
         :root {
             color-scheme: light;
-            --bg-top: #f5f4ef;
-            --bg-bottom: #ded8ca;
-            --shell: #f8f5ee;
-            --shell-border: #cfc6b6;
-            --card: rgba(255, 255, 255, 0.82);
-            --text-main: #302b25;
-            --text-soft: #70665a;
-            --accent: #2e2e2e;
-            --accent-shadow: #101010;
-            --light-square: #f3efe6;
-            --dark-square: #72675c;
-            --board-frame: #302a24;
-            --selected: rgba(217, 190, 130, 0.9);
-            --last-move: rgba(237, 226, 191, 0.96);
-            --check: rgba(167, 77, 77, 0.9);
-            --move-dot: rgba(42, 42, 42, 0.42);
-            --capture-ring: rgba(251, 250, 247, 0.82);
-            --shadow-lg: 0 22px 60px rgba(42, 37, 32, 0.18);
-            --shadow-md: 0 12px 24px rgba(42, 37, 32, 0.12);
+            --bg-top: #f6fbe5;
+            --bg-bottom: #bfdc79;
+            --shell: #f8fde7;
+            --shell-border: #d2e78a;
+            --card: rgba(255, 250, 233, 0.9);
+            --text-main: #304213;
+            --text-soft: #6d7f3b;
+            --accent: #7ac70c;
+            --accent-shadow: #58a700;
+            --light-square: #fff6d6;
+            --dark-square: #8ac739;
+            --board-frame: #416217;
+            --board-frame-top: #78aa27;
+            --selected: rgba(255, 211, 84, 0.94);
+            --last-move: rgba(255, 232, 136, 0.94);
+            --check: rgba(255, 146, 101, 0.94);
+            --move-dot: rgba(48, 66, 19, 0.28);
+            --capture-ring: rgba(255, 248, 213, 0.94);
+            --piece-white: #fff9e8;
+            --piece-white-shade: #dce8a8;
+            --piece-black: #4d6820;
+            --piece-black-shade: #34470f;
+            --piece-outline: #36510d;
+            --shadow-lg: 0 24px 60px rgba(52, 86, 14, 0.18);
+            --shadow-md: 0 14px 28px rgba(52, 86, 14, 0.12);
             --board-size: min(640px, calc(100vw - 56px));
             --square-size: calc(var(--board-size) / 8);
         }
@@ -47,7 +53,9 @@
             font-family: 'Nunito', sans-serif;
             color: var(--text-main);
             background:
-                radial-gradient(circle at top left, rgba(255, 255, 255, 0.55), transparent 34%),
+                radial-gradient(circle at top left, rgba(255, 255, 255, 0.7), transparent 32%),
+                radial-gradient(circle at 86% 18%, rgba(132, 192, 46, 0.24), transparent 24%),
+                radial-gradient(circle at 22% 82%, rgba(255, 239, 184, 0.46), transparent 22%),
                 linear-gradient(180deg, var(--bg-top) 0%, var(--bg-bottom) 100%);
             padding: max(12px, env(safe-area-inset-top)) 14px max(14px, env(safe-area-inset-bottom));
             touch-action: manipulation;
@@ -62,7 +70,9 @@
 
         .app-shell {
             width: min(1120px, 100%);
-            background: var(--shell);
+            background:
+                linear-gradient(180deg, rgba(255, 255, 255, 0.56), rgba(255, 255, 255, 0)),
+                var(--shell);
             border: 1px solid var(--shell-border);
             border-radius: 30px;
             box-shadow: var(--shadow-lg);
@@ -79,7 +89,7 @@
         .play-area,
         .side-panel {
             background: var(--card);
-            border: 1px solid rgba(167, 156, 141, 0.42);
+            border: 1px solid rgba(122, 167, 36, 0.22);
             border-radius: 26px;
             box-shadow: var(--shadow-md);
         }
@@ -106,8 +116,8 @@
             text-decoration: none;
             font-weight: 800;
             color: var(--text-main);
-            background: #ede6d8;
-            box-shadow: inset 0 -3px 0 rgba(130, 118, 103, 0.65);
+            background: #eef7d2;
+            box-shadow: inset 0 -3px 0 rgba(143, 177, 72, 0.85);
         }
 
         .brand {
@@ -145,8 +155,8 @@
             min-height: 68px;
             padding: 10px 12px;
             border-radius: 20px;
-            background: rgba(255, 250, 238, 0.95);
-            border: 1px solid rgba(167, 156, 141, 0.36);
+            background: rgba(255, 252, 236, 0.94);
+            border: 1px solid rgba(122, 167, 36, 0.18);
         }
 
         .capture-label {
@@ -164,16 +174,26 @@
             gap: 4px;
         }
 
+        .captured-list .piece {
+            width: 34px;
+            height: 34px;
+            transform: none;
+            filter:
+                drop-shadow(0 3px 0 rgba(54, 81, 13, 0.06))
+                drop-shadow(0 4px 4px rgba(54, 81, 13, 0.12));
+        }
+
         .board-frame {
             width: min(100%, calc(var(--board-size) + 28px));
             aspect-ratio: 1;
             padding: 14px;
             border-radius: 30px;
             background:
-                linear-gradient(180deg, #60564c 0%, var(--board-frame) 100%);
+                linear-gradient(180deg, var(--board-frame-top) 0%, var(--board-frame) 100%);
             box-shadow:
-                inset 0 -5px 0 rgba(10, 10, 10, 0.42),
-                0 16px 28px rgba(42, 37, 32, 0.18);
+                inset 0 -5px 0 rgba(28, 42, 8, 0.34),
+                inset 0 3px 0 rgba(236, 249, 192, 0.42),
+                0 16px 28px rgba(52, 86, 14, 0.18);
         }
 
         #chessboard {
@@ -184,8 +204,9 @@
             grid-template-rows: repeat(8, 1fr);
             overflow: hidden;
             border-radius: 22px;
-            background: #fdf4d6;
+            background: #edf5c8;
             position: relative;
+            box-shadow: inset 0 0 0 4px rgba(54, 81, 13, 0.16);
         }
 
         .square {
@@ -200,11 +221,11 @@
         }
 
         .square.light {
-            background: var(--light-square);
+            background: linear-gradient(180deg, #fff9e0 0%, var(--light-square) 100%);
         }
 
         .square.dark {
-            background: var(--dark-square);
+            background: linear-gradient(180deg, #9dd84d 0%, var(--dark-square) 100%);
         }
 
         .square.selected {
@@ -240,60 +261,77 @@
         .piece {
             position: relative;
             z-index: 1;
-            width: calc(var(--square-size) * 0.78);
-            height: calc(var(--square-size) * 0.78);
-            display: grid;
-            place-items: center;
-            font-size: calc(var(--square-size) * 0.7);
-            line-height: 1;
-            font-family: "Times New Roman", "Noto Serif", serif;
-            font-weight: 700;
-            border-radius: 18%;
-            transform: translateY(-2%);
-            text-shadow:
-                0 1px 0 rgba(255, 255, 255, 0.55),
-                0 -1px 0 rgba(0, 0, 0, 0.18),
-                0 5px 8px rgba(0, 0, 0, 0.25);
-        }
-
-        .piece::before {
-            content: "";
-            position: absolute;
-            inset: 12% 10% 10%;
-            border-radius: 24%;
-            z-index: -1;
-            box-shadow:
-                inset 0 2px 4px rgba(255, 255, 255, 0.45),
-                inset 0 -8px 10px rgba(0, 0, 0, 0.22),
-                0 7px 10px rgba(0, 0, 0, 0.18);
+            width: calc(var(--square-size) * 0.82);
+            height: calc(var(--square-size) * 0.82);
+            display: block;
+            pointer-events: none;
+            transform: translateY(-4%);
+            filter:
+                drop-shadow(0 4px 0 rgba(54, 81, 13, 0.08))
+                drop-shadow(0 8px 10px rgba(54, 81, 13, 0.18));
         }
 
         .piece.white {
-            color: #fffdf8;
-            filter: drop-shadow(0 3px 4px rgba(0, 0, 0, 0.16));
-        }
-
-        .piece.white::before {
-            background:
-                radial-gradient(circle at 30% 24%, rgba(255, 255, 255, 0.98), rgba(255, 255, 255, 0.55) 34%, transparent 36%),
-                linear-gradient(180deg, #ffffff 0%, #ddd8cc 58%, #bdb5a6 100%);
-            border: 1px solid rgba(136, 126, 112, 0.35);
+            --piece-fill: var(--piece-white);
+            --piece-shade: var(--piece-white-shade);
+            --piece-stroke: var(--piece-outline);
+            --piece-gloss: rgba(255, 255, 255, 0.88);
+            --piece-shadow-fill: rgba(54, 81, 13, 0.14);
         }
 
         .piece.black {
-            color: #181614;
-            text-shadow:
-                0 1px 0 rgba(255, 255, 255, 0.12),
-                0 -1px 0 rgba(0, 0, 0, 0.35),
-                0 5px 8px rgba(0, 0, 0, 0.3);
-            filter: drop-shadow(0 3px 5px rgba(0, 0, 0, 0.28));
+            --piece-fill: var(--piece-black);
+            --piece-shade: var(--piece-black-shade);
+            --piece-stroke: #223607;
+            --piece-gloss: rgba(209, 236, 143, 0.28);
+            --piece-shadow-fill: rgba(22, 33, 7, 0.24);
         }
 
-        .piece.black::before {
-            background:
-                radial-gradient(circle at 30% 22%, rgba(255, 255, 255, 0.32), rgba(255, 255, 255, 0.08) 26%, transparent 28%),
-                linear-gradient(180deg, #55504b 0%, #25211d 58%, #090909 100%);
-            border: 1px solid rgba(255, 255, 255, 0.08);
+        .piece-svg {
+            width: 100%;
+            height: 100%;
+            overflow: visible;
+        }
+
+        .piece-svg .piece-shadow {
+            fill: var(--piece-shadow-fill);
+        }
+
+        .piece-svg .piece-main,
+        .piece-svg .piece-base {
+            stroke: var(--piece-stroke);
+            stroke-width: 3.5;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        .piece-svg .piece-main {
+            fill: var(--piece-fill);
+        }
+
+        .piece-svg .piece-base {
+            fill: var(--piece-shade);
+        }
+
+        .piece-svg .piece-shade {
+            fill: var(--piece-shade);
+            opacity: 0.95;
+        }
+
+        .piece-svg .piece-highlight {
+            fill: var(--piece-gloss);
+        }
+
+        .piece-svg .piece-detail {
+            fill: none;
+            stroke: var(--piece-stroke);
+            stroke-width: 3.2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        .piece-svg .piece-mark {
+            fill: var(--piece-stroke);
         }
 
         .side-panel {
@@ -305,8 +343,8 @@
         .status-card,
         .controls-card,
         .history-card {
-            background: rgba(255, 251, 241, 0.92);
-            border: 1px solid rgba(167, 156, 141, 0.36);
+            background: rgba(255, 253, 240, 0.94);
+            border: 1px solid rgba(122, 167, 36, 0.18);
             border-radius: 20px;
             padding: 14px;
         }
@@ -332,7 +370,8 @@
             gap: 10px;
             padding: 10px 14px;
             border-radius: 999px;
-            background: #efe9dd;
+            background: #eef7d2;
+            box-shadow: inset 0 -4px 0 rgba(143, 177, 72, 0.55);
             font-weight: 800;
         }
 
@@ -340,12 +379,12 @@
             width: 14px;
             height: 14px;
             border-radius: 50%;
-            border: 2px solid rgba(72, 64, 56, 0.7);
-            background: #ffffff;
+            border: 2px solid rgba(54, 81, 13, 0.56);
+            background: #fffdf0;
         }
 
         .turn-dot.black-turn {
-            background: #4c4335;
+            background: #4d6820;
         }
 
         .status-message {
@@ -356,20 +395,20 @@
             justify-content: center;
             padding: 10px 12px;
             border-radius: 16px;
-            background: #f1ece2;
+            background: #f1f8dc;
             color: var(--text-soft);
             font-weight: 800;
             text-align: center;
         }
 
         .status-message.alert {
-            color: #9b432f;
-            background: #ffe0c8;
+            color: #8a4d1b;
+            background: #ffe2b8;
         }
 
         .status-message.success {
-            color: #316927;
-            background: #dff5bf;
+            color: #2e6b18;
+            background: #daf0b7;
         }
 
         .controls-card {
@@ -400,14 +439,14 @@
 
         .btn-secondary {
             color: var(--text-main);
-            background: #e9e2d3;
-            box-shadow: inset 0 -4px 0 #bdb19d;
+            background: #eef7d2;
+            box-shadow: inset 0 -4px 0 #c7df91;
         }
 
         .btn-danger {
-            color: #8d3d2d;
-            background: #ffd7ca;
-            box-shadow: inset 0 -4px 0 #f2a58b;
+            color: var(--text-main);
+            background: #dceeb5;
+            box-shadow: inset 0 -4px 0 #a9ca63;
         }
 
         .history-card {
@@ -432,7 +471,7 @@
         .move {
             padding: 7px 10px;
             border-radius: 999px;
-            background: #ece5d8;
+            background: #edf7d0;
             color: var(--text-main);
             font-weight: 700;
             font-size: 0.92rem;
@@ -452,7 +491,7 @@
             align-items: center;
             justify-content: center;
             padding: 20px;
-            background: rgba(76, 67, 53, 0.5);
+            background: rgba(57, 82, 17, 0.36);
             backdrop-filter: blur(8px);
             z-index: 20;
         }
@@ -464,8 +503,8 @@
         .modal-content {
             width: min(420px, 100%);
             border-radius: 24px;
-            background: #f8f5ee;
-            border: 1px solid rgba(228, 205, 144, 0.9);
+            background: #fbfde8;
+            border: 1px solid rgba(122, 167, 36, 0.4);
             box-shadow: var(--shadow-lg);
             padding: 20px;
             text-align: center;
@@ -489,16 +528,16 @@
             place-items: center;
             border: none;
             border-radius: 18px;
-            background: #ebe3d4;
-            box-shadow: inset 0 -4px 0 #b6a893;
+            background: #edf7d0;
+            box-shadow: inset 0 -4px 0 #c7df91;
             font-size: 1rem;
             cursor: pointer;
         }
 
         .promotion-piece .piece {
-            width: 46px;
-            height: 46px;
-            font-size: 2rem;
+            width: 52px;
+            height: 52px;
+            transform: none;
         }
 
         @media (hover: hover) {
@@ -584,7 +623,8 @@
             }
 
             .piece {
-                font-size: calc(var(--square-size) * 0.72);
+                width: calc(var(--square-size) * 0.84);
+                height: calc(var(--square-size) * 0.84);
             }
 
             .promotion-piece {
@@ -664,8 +704,77 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
     <script>
-        const PIECE_SYMBOLS = {
-            k: "♚", q: "♛", r: "♜", b: "♝", n: "♞", p: "♟"
+        const PIECE_SVGS = {
+            k: `
+                <svg class="piece-svg" viewBox="0 0 72 72" focusable="false">
+                    <ellipse class="piece-shadow" cx="36" cy="61" rx="17" ry="4.5"></ellipse>
+                    <path class="piece-detail" d="M36 8V17"></path>
+                    <path class="piece-detail" d="M31 12.5H41"></path>
+                    <path class="piece-main" d="M36 20C43.8 20 50 26.7 50 34.8C50 38.8 48 42.5 44.9 45.4L47.7 49.1C49.4 51.3 47.8 55 44.8 55H27.2C24.2 55 22.6 51.3 24.3 49.1L27.1 45.4C24 42.5 22 38.8 22 34.8C22 26.7 28.2 20 36 20Z"></path>
+                    <path class="piece-shade" d="M40.4 24.1C44.5 27.1 46.5 31.2 46.5 35.4C46.5 38.4 45.3 41.1 42.5 43.9L45 47.3C46.1 48.8 45.1 51.2 43.1 51.2H35.3C37.9 48 38.6 44.7 37 40.3C35.2 35.1 36 28.6 40.4 24.1Z"></path>
+                    <path class="piece-detail" d="M28.5 39H43.5"></path>
+                    <path class="piece-base" d="M18 55H54C56.2 55 58 56.8 58 59C58 61.2 56.2 63 54 63H18C15.8 63 14 61.2 14 59C14 56.8 15.8 55 18 55Z"></path>
+                    <path class="piece-highlight" d="M31.2 23.4C32 20.7 34.6 18.8 37.2 18.8C34 17.7 29.6 20 28.5 24.3C27.7 27.7 28.9 31.4 30.9 33.5C30.1 29.9 30.2 26.8 31.2 23.4Z"></path>
+                </svg>
+            `,
+            q: `
+                <svg class="piece-svg" viewBox="0 0 72 72" focusable="false">
+                    <ellipse class="piece-shadow" cx="36" cy="61" rx="18" ry="4.5"></ellipse>
+                    <circle class="piece-main" cx="23.5" cy="17.5" r="4.5"></circle>
+                    <circle class="piece-main" cx="36" cy="11.5" r="4.5"></circle>
+                    <circle class="piece-main" cx="48.5" cy="17.5" r="4.5"></circle>
+                    <path class="piece-main" d="M21.5 22.5L28.8 35.8L36 27.8L43.2 35.8L50.5 22.5L54.5 26.1L50.6 48.2C50.1 52.4 46.5 55.5 42.2 55.5H29.8C25.5 55.5 21.9 52.4 21.4 48.2L17.5 26.1L21.5 22.5Z"></path>
+                    <path class="piece-shade" d="M42.3 28.8L48.7 23.7L45.9 47.4C45.5 50.2 43.4 52.5 40.6 53.2H35.2C37.8 49.7 38.6 45.8 36.8 41.3C35.5 37.9 37.4 33.2 42.3 28.8Z"></path>
+                    <path class="piece-detail" d="M24.5 31.8L28.8 35.8L36 27.8L43.2 35.8L47.5 31.8"></path>
+                    <path class="piece-detail" d="M24.5 41.5H47.5"></path>
+                    <path class="piece-base" d="M18 55H54C56.2 55 58 56.8 58 59C58 61.2 56.2 63 54 63H18C15.8 63 14 61.2 14 59C14 56.8 15.8 55 18 55Z"></path>
+                    <path class="piece-highlight" d="M30.2 28.2C31 24.6 34.2 21.8 37.6 21.6C33.8 20.7 29.2 23.8 28.6 28.3C28.2 31.3 29.1 34.4 31 36.7C30.1 33.8 29.7 31 30.2 28.2Z"></path>
+                </svg>
+            `,
+            r: `
+                <svg class="piece-svg" viewBox="0 0 72 72" focusable="false">
+                    <ellipse class="piece-shadow" cx="36" cy="61" rx="18" ry="4.5"></ellipse>
+                    <path class="piece-main" d="M21 16H28V22H33V16H39V22H44V16H51V26.5C51 29.5 48.9 32.1 46 32.8L48.1 48.8C48.6 52.6 45.6 56 41.8 56H30.2C26.4 56 23.4 52.6 23.9 48.8L26 32.8C23.1 32.1 21 29.5 21 26.5V16Z"></path>
+                    <path class="piece-shade" d="M40.8 22H46.6V27.2C46.6 29 45.6 30.7 44 31.5L45.7 47.8C46.1 50.8 43.8 53.4 40.8 53.9H35.8C38.1 50.9 38.7 47.2 37.5 43.2C36.5 39.4 36.5 28.4 40.8 22Z"></path>
+                    <path class="piece-detail" d="M26.5 33H45.5"></path>
+                    <path class="piece-detail" d="M28 40.5H44"></path>
+                    <path class="piece-base" d="M18 56H54C56.2 56 58 57.8 58 60C58 62.2 56.2 64 54 64H18C15.8 64 14 62.2 14 60C14 57.8 15.8 56 18 56Z"></path>
+                    <path class="piece-highlight" d="M29 21C29.7 18.4 31.7 16.4 34 15.7C31.3 14.8 27.8 16.8 27.3 20C26.7 23.7 27.7 27.1 29.7 29.2C28.9 26.3 28.4 23.8 29 21Z"></path>
+                </svg>
+            `,
+            b: `
+                <svg class="piece-svg" viewBox="0 0 72 72" focusable="false">
+                    <ellipse class="piece-shadow" cx="36" cy="61" rx="17" ry="4.5"></ellipse>
+                    <circle class="piece-main" cx="36" cy="15.5" r="5.5"></circle>
+                    <path class="piece-main" d="M36 24C43.7 24 49.5 30 49.5 37.4C49.5 41.1 48 44.2 45.8 47.1L48.6 50.3C50.5 52.4 49 55.8 46.1 55.8H25.9C23 55.8 21.5 52.4 23.4 50.3L26.2 47.1C24 44.2 22.5 41.1 22.5 37.4C22.5 30 28.3 24 36 24Z"></path>
+                    <path class="piece-shade" d="M40.2 28.6C43.4 31.2 45 34.2 45 37.4C45 40.2 43.8 42.8 41.7 45.3L44.4 48.5C45.5 49.8 44.7 51.9 43 52.3H35.5C38.5 48.4 39 44.4 37.2 39.8C35.9 36.5 36.7 31.9 40.2 28.6Z"></path>
+                    <path class="piece-detail" d="M39 25.5L32.8 42.5"></path>
+                    <path class="piece-base" d="M18.5 55.5H53.5C55.7 55.5 57.5 57.3 57.5 59.5C57.5 61.7 55.7 63.5 53.5 63.5H18.5C16.3 63.5 14.5 61.7 14.5 59.5C14.5 57.3 16.3 55.5 18.5 55.5Z"></path>
+                    <path class="piece-highlight" d="M32.1 26.8C32.9 23.9 35 21.9 37.2 21.3C34.2 20.8 30.9 23.6 30.7 26.9C30.4 30.2 31.5 33.2 33.5 35.3C32.7 32.5 31.5 29.7 32.1 26.8Z"></path>
+                </svg>
+            `,
+            n: `
+                <svg class="piece-svg" viewBox="0 0 72 72" focusable="false">
+                    <ellipse class="piece-shadow" cx="36" cy="61" rx="18" ry="4.5"></ellipse>
+                    <path class="piece-main" d="M50.5 17.2C43.6 14.2 36.1 17.4 31.8 22.7C28.6 26.6 27.5 31.7 28 37L21.6 43.4C19.1 45.9 20.8 50.2 24.3 50.2H28.7V54.1C28.7 57.4 31.3 60 34.6 60H48.7C52 60 54.6 57.4 54.6 54.1V38.2C54.6 29.8 53.4 20.4 50.5 17.2Z"></path>
+                    <path class="piece-shade" d="M48.8 21.5C45.2 20.3 40.9 22.5 37.8 26.1C35 29.5 34.2 34 34.2 38.5V45.1H47.6C49.8 45.1 51.5 43.4 51.5 41.2V28.8C51.5 25.6 50.4 23 48.8 21.5Z"></path>
+                    <path class="piece-detail" d="M36.4 27.8C39.1 24.8 43.1 23.8 46.1 24.9"></path>
+                    <path class="piece-detail" d="M33 39.5C35.8 38.1 39.1 38.2 41.8 39.8"></path>
+                    <circle class="piece-mark" cx="42.7" cy="30.6" r="2"></circle>
+                    <path class="piece-base" d="M21 56H54.5C56.7 56 58.5 57.8 58.5 60C58.5 62.2 56.7 64 54.5 64H21C18.8 64 17 62.2 17 60C17 57.8 18.8 56 21 56Z"></path>
+                    <path class="piece-highlight" d="M31.7 25.9C32.9 22.2 35.8 19.4 38.8 18.6C34.6 18.1 30.2 21.6 29.8 25.9C29.4 29.5 30.2 32.6 32.1 35.1C31.3 31.8 30.8 29.2 31.7 25.9Z"></path>
+                </svg>
+            `,
+            p: `
+                <svg class="piece-svg" viewBox="0 0 72 72" focusable="false">
+                    <ellipse class="piece-shadow" cx="36" cy="61" rx="16.5" ry="4.5"></ellipse>
+                    <circle class="piece-main" cx="36" cy="20.5" r="9"></circle>
+                    <path class="piece-main" d="M27.5 34.5C30.1 30.2 41.9 30.2 44.5 34.5L48.6 45.5C49.8 50.3 46 54.5 41 54.5H31C26 54.5 22.2 50.3 23.4 45.5L27.5 34.5Z"></path>
+                    <path class="piece-shade" d="M40.8 35.8C43.6 38 45 41.2 45 45C45 48.5 43.4 51.3 40.7 53.4H35.2C37.6 50.1 38 46.3 35.8 42C34.5 39.4 35.5 37 40.8 35.8Z"></path>
+                    <path class="piece-base" d="M20 54.5H52C54.2 54.5 56 56.3 56 58.5C56 60.7 54.2 62.5 52 62.5H20C17.8 62.5 16 60.7 16 58.5C16 56.3 17.8 54.5 20 54.5Z"></path>
+                    <path class="piece-highlight" d="M31.4 16.8C32.2 13.2 34.8 10.7 37.8 10.4C34.2 9.3 29.8 12.3 29.4 16.5C29.1 19.7 30.2 22.8 32 25.1C31.1 22.2 30.7 19.5 31.4 16.8Z"></path>
+                </svg>
+            `
         };
 
         let game = new Chess();
@@ -692,8 +801,8 @@
 
         function createPieceElement(color, type) {
             const pieceEl = document.createElement("span");
-            pieceEl.className = `piece ${color === "w" ? "white" : "black"}`;
-            pieceEl.textContent = PIECE_SYMBOLS[type];
+            pieceEl.className = `piece ${color === "w" ? "white" : "black"} piece-${type}`;
+            pieceEl.innerHTML = PIECE_SVGS[type] || "";
             pieceEl.setAttribute("aria-hidden", "true");
             return pieceEl;
         }
@@ -949,14 +1058,18 @@
         }
 
         function updateBoardSize() {
-            const viewportWidth = window.innerWidth;
+            const viewportWidth = document.documentElement.clientWidth;
             const viewportHeight = window.innerHeight;
             const playAreaStyles = getComputedStyle(playAreaEl);
             const playAreaPaddingX = parseFloat(playAreaStyles.paddingLeft) + parseFloat(playAreaStyles.paddingRight);
+            const bodyPaddingX = viewportWidth <= 420 ? 20 : 28;
+            const appShellPaddingX = viewportWidth <= 720 ? 24 : 36;
+            const boardFrameExtra = viewportWidth <= 420 ? 18 : 28;
+            const viewportWidthCap = viewportWidth - bodyPaddingX - appShellPaddingX - playAreaPaddingX - boardFrameExtra;
             const availableWidth = Math.min(
                 640,
-                viewportWidth - 24,
-                playAreaEl.clientWidth - playAreaPaddingX
+                viewportWidthCap,
+                playAreaEl.clientWidth - playAreaPaddingX - boardFrameExtra
             );
 
             const topbarHeight = topbarEl.offsetHeight;
