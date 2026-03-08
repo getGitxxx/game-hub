@@ -1,0 +1,727 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no" />
+  <title>Dino Runner</title>
+  <style>
+    :root {
+      --day-bg: #f7f7f7;
+      --day-fg: #202020;
+      --night-bg: #101214;
+      --night-fg: #f4f4f4;
+    }
+
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html,
+    body {
+      margin: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      touch-action: none;
+      background: var(--day-bg);
+      font-family: "Courier New", "Cascadia Mono", monospace;
+    }
+
+    #gameCanvas {
+      display: block;
+      width: 100vw;
+      height: 100vh;
+      image-rendering: pixelated;
+      image-rendering: crisp-edges;
+      touch-action: none;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="gameCanvas" aria-label="Chrome Dino Game"></canvas>
+
+  <script>
+    (() => {
+      "use strict";
+
+      const SCORE_STEP_FOR_THEME = 700;
+      const STORAGE_KEY = "dino_high_score_v1";
+
+      const toMask = (rows) => rows.map((row) => Array.from(row, (ch) => ch === "1"));
+
+      const DINO_RUN_1 = toMask([
+        "000011100000000000000000",
+        "000111111000000000000000",
+        "001111111100000000000000",
+        "011111111110000000000000",
+        "011111111111100001100000",
+        "011111111111110011110000",
+        "011111111111111111110000",
+        "011111111111111111110000",
+        "001111111111111111100000",
+        "000111111111111111000000",
+        "000011111111111110000000",
+        "000001111111111100000000",
+        "000011111111111110000000",
+        "000111100011111111000000",
+        "001111000001111111100000",
+        "001110000000111111100000",
+      ]);
+
+      const DINO_RUN_2 = toMask([
+        "000011100000000000000000",
+        "000111111000000000000000",
+        "001111111100000000000000",
+        "011111111110000000000000",
+        "011111111111100001100000",
+        "011111111111110011110000",
+        "011111111111111111110000",
+        "011111111111111111110000",
+        "001111111111111111100000",
+        "000111111111111111000000",
+        "000011111111111110000000",
+        "000001111111111100000000",
+        "000011111111111110000000",
+        "000111111000111111000000",
+        "001111110000011111100000",
+        "001111100000001111100000",
+      ]);
+
+      const DINO_DUCK_1 = toMask([
+        "0000001111111111111110000000",
+        "0000111111111111111111100000",
+        "0001111111111111111111110000",
+        "0011111111111111111111111000",
+        "0011111111111111111111111100",
+        "0011111111111111111111111100",
+        "0001111111111111111111111000",
+        "0000111111111111111111100000",
+        "0011111000000111110001111000",
+        "0111110000000011110000111100",
+        "0111100000000001110000011100",
+      ]);
+
+      const DINO_DUCK_2 = toMask([
+        "0000001111111111111110000000",
+        "0000111111111111111111100000",
+        "0001111111111111111111110000",
+        "0011111111111111111111111000",
+        "0011111111111111111111111100",
+        "0011111111111111111111111100",
+        "0001111111111111111111111000",
+        "0000111111111111111111100000",
+        "0001111110000011111100011100",
+        "0011111100000001111110001110",
+        "0011111000000000111110000110",
+      ]);
+
+      const CACTUS_SMALL = toMask([
+        "00011000",
+        "00011000",
+        "00011000",
+        "11011011",
+        "11011011",
+        "11011011",
+        "11011011",
+        "11111111",
+        "11111111",
+        "11111111",
+      ]);
+
+      const CACTUS_MEDIUM = toMask([
+        "000011000000",
+        "000011000000",
+        "000011000000",
+        "011011001100",
+        "111011001100",
+        "111011001100",
+        "111111111100",
+        "111111111100",
+        "111111111100",
+        "111111111100",
+        "111111111100",
+        "111111111100",
+      ]);
+
+      const CACTUS_TALL = toMask([
+        "000001100000",
+        "000001100000",
+        "000001100000",
+        "000001100000",
+        "001101101100",
+        "001101101100",
+        "001101101100",
+        "111101101111",
+        "111101101111",
+        "111111111111",
+        "111111111111",
+        "111111111111",
+        "111111111111",
+        "111111111111",
+      ]);
+
+      const PTERO_1 = toMask([
+        "000000111111000000",
+        "000111111111110000",
+        "011111111111111100",
+        "111111111111111111",
+        "111111111111111111",
+        "001111100001111100",
+        "000111000000111000",
+      ]);
+
+      const PTERO_2 = toMask([
+        "001111110000111111",
+        "111111111001111111",
+        "111111111111111111",
+        "011111111111111110",
+        "000111111111111000",
+        "000001111111000000",
+        "000000111100000000",
+      ]);
+
+      const CLOUD = toMask([
+        "0001111000",
+        "0011111110",
+        "0111111111",
+        "1111111111",
+        "0111111110",
+        "0011111000",
+      ]);
+
+      function drawMask(ctx, mask, x, y, pixel, color) {
+        ctx.fillStyle = color;
+        for (let row = 0; row < mask.length; row += 1) {
+          for (let col = 0; col < mask[row].length; col += 1) {
+            if (mask[row][col]) {
+              ctx.fillRect(x + col * pixel, y + row * pixel, pixel, pixel);
+            }
+          }
+        }
+      }
+
+      function maskBounds(mask, pixel) {
+        return { width: mask[0].length * pixel, height: mask.length * pixel };
+      }
+
+      class Dino {
+        constructor(game) {
+          this.game = game;
+          this.x = 0;
+          this.y = 0;
+          this.vy = 0;
+          this.gravity = 2600;
+          this.jumpVel = -900;
+          this.ducking = false;
+          this.frameClock = 0;
+          this.animFrame = 0;
+          this.dead = false;
+          this.reset();
+        }
+
+        reset() {
+          this.vy = 0;
+          this.ducking = false;
+          this.frameClock = 0;
+          this.animFrame = 0;
+          this.dead = false;
+          this.x = this.game.pixel * 10;
+          this.y = this.game.groundY - this.getBounds().height;
+        }
+
+        isOnGround() {
+          return this.y >= this.game.groundY - this.getBounds().height - 0.1;
+        }
+
+        setDuck(value) {
+          const next = Boolean(value);
+          if (this.ducking === next) return;
+          const wasOnGround = this.isOnGround();
+          const oldH = this.getBounds().height;
+          this.ducking = next;
+          const newH = this.getBounds().height;
+          if (wasOnGround) {
+            this.y += oldH - newH;
+          }
+        }
+
+        jump() {
+          if (this.isOnGround()) {
+            this.vy = this.jumpVel;
+          }
+        }
+
+        getCurrentMask() {
+          if (this.ducking && this.isOnGround()) {
+            return this.animFrame % 2 === 0 ? DINO_DUCK_1 : DINO_DUCK_2;
+          }
+          return this.animFrame % 2 === 0 ? DINO_RUN_1 : DINO_RUN_2;
+        }
+
+        getBounds() {
+          return maskBounds(this.getCurrentMask(), this.game.pixel);
+        }
+
+        update(dt) {
+          this.frameClock += dt;
+          if (this.frameClock > 0.085) {
+            this.frameClock = 0;
+            this.animFrame = (this.animFrame + 1) % 2;
+          }
+
+          const gravityBoost = this.ducking && !this.isOnGround() ? 1.8 : 1;
+          this.vy += this.gravity * gravityBoost * dt;
+          this.y += this.vy * dt;
+
+          const h = this.getBounds().height;
+          const groundTop = this.game.groundY - h;
+          if (this.y > groundTop) {
+            this.y = groundTop;
+            this.vy = 0;
+          }
+        }
+
+        render(ctx, color) {
+          drawMask(ctx, this.getCurrentMask(), this.x, this.y, this.game.pixel, color);
+        }
+      }
+
+      class Obstacle {
+        constructor(game, type, x) {
+          this.game = game;
+          this.type = type;
+          this.x = x;
+          this.frameClock = 0;
+          this.frame = 0;
+
+          if (type === "ptero") {
+            this.masks = [PTERO_1, PTERO_2];
+            const flyLevel = Math.random();
+            const baseHeight = this.game.pixel * 16;
+            const low = this.game.groundY - baseHeight - this.game.pixel * 6;
+            const mid = this.game.groundY - baseHeight - this.game.pixel * 12;
+            const high = this.game.groundY - baseHeight - this.game.pixel * 18;
+            this.y = flyLevel < 0.45 ? low : flyLevel < 0.8 ? mid : high;
+          } else {
+            const variants = [CACTUS_SMALL, CACTUS_MEDIUM, CACTUS_TALL];
+            this.masks = [variants[Math.floor(Math.random() * variants.length)]];
+            this.y = this.game.groundY - maskBounds(this.masks[0], this.game.pixel).height;
+          }
+        }
+
+        getCurrentMask() {
+          return this.masks[this.frame % this.masks.length];
+        }
+
+        getBounds() {
+          const mask = this.getCurrentMask();
+          const b = maskBounds(mask, this.game.pixel);
+          return { x: this.x, y: this.y, width: b.width, height: b.height };
+        }
+
+        update(dt) {
+          this.x -= this.game.speed * dt;
+          if (this.type === "ptero") {
+            this.frameClock += dt;
+            if (this.frameClock > 0.12) {
+              this.frameClock = 0;
+              this.frame = (this.frame + 1) % this.masks.length;
+            }
+          }
+        }
+
+        render(ctx, color) {
+          drawMask(ctx, this.getCurrentMask(), this.x, this.y, this.game.pixel, color);
+        }
+      }
+
+      class Cloud {
+        constructor(game) {
+          this.game = game;
+          this.reset(true);
+        }
+
+        reset(initial = false) {
+          this.parallax = 0.25 + Math.random() * 0.2;
+          this.x = initial ? Math.random() * this.game.w : this.game.w + Math.random() * this.game.w * 0.3;
+          this.y = this.game.h * 0.18 + Math.random() * this.game.h * 0.28;
+        }
+
+        update(dt) {
+          this.x -= this.game.speed * this.parallax * dt;
+          if (this.x < -maskBounds(CLOUD, this.game.pixel).width - 10) {
+            this.reset();
+          }
+        }
+
+        render(ctx, color) {
+          drawMask(ctx, CLOUD, this.x, this.y, this.game.pixel, color);
+        }
+      }
+
+      class Game {
+        constructor(canvas) {
+          this.canvas = canvas;
+          this.ctx = canvas.getContext("2d", { alpha: false });
+          this.ctx.imageSmoothingEnabled = false;
+
+          this.w = 0;
+          this.h = 0;
+          this.pixel = 4;
+          this.groundY = 0;
+
+          this.state = "waiting";
+          this.score = 0;
+          this.highScore = this.readHighScore();
+          this.speed = 320;
+          this.baseSpeed = 320;
+
+          this.clouds = [];
+          this.obstacles = [];
+          this.spawnClock = 0;
+          this.spawnGap = 1.2;
+          this.lastTime = 0;
+          this.flashClock = 0;
+          this.horizonOffset = 0;
+
+          this.dino = new Dino(this);
+
+          this.pointerDown = false;
+          this.pointerStartY = 0;
+          this.pointerStartX = 0;
+          this.pointerStartAt = 0;
+          this.longPressTimer = null;
+          this.touchDuck = false;
+
+          this.resize();
+          this.resetWorld();
+          this.bindEvents();
+          requestAnimationFrame((t) => this.loop(t));
+        }
+
+        readHighScore() {
+          const val = Number(localStorage.getItem(STORAGE_KEY));
+          return Number.isFinite(val) && val >= 0 ? Math.floor(val) : 0;
+        }
+
+        writeHighScore() {
+          localStorage.setItem(STORAGE_KEY, String(this.highScore));
+        }
+
+        resize() {
+          const dpr = Math.max(1, Math.min(3, window.devicePixelRatio || 1));
+          this.w = window.innerWidth;
+          this.h = window.innerHeight;
+          this.canvas.width = Math.floor(this.w * dpr);
+          this.canvas.height = Math.floor(this.h * dpr);
+          this.canvas.style.width = `${this.w}px`;
+          this.canvas.style.height = `${this.h}px`;
+          this.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+          this.pixel = Math.max(2, Math.floor(Math.min(this.w, this.h) / 120));
+          this.groundY = Math.floor(this.h * 0.78);
+
+          if (this.groundY > this.h - this.pixel * 10) {
+            this.groundY = this.h - this.pixel * 10;
+          }
+
+          this.dino.reset();
+        }
+
+        resetWorld() {
+          this.score = 0;
+          this.speed = this.baseSpeed;
+          this.spawnClock = 0;
+          this.spawnGap = 0.9;
+          this.flashClock = 0;
+          this.horizonOffset = 0;
+          this.obstacles = [];
+          this.clouds = Array.from({ length: 6 }, () => new Cloud(this));
+          this.dino.reset();
+        }
+
+        startGame() {
+          this.state = "running";
+          this.resetWorld();
+          this.dino.jump();
+        }
+
+        gameOver() {
+          this.state = "gameover";
+          if (this.score > this.highScore) {
+            this.highScore = Math.floor(this.score);
+            this.writeHighScore();
+          }
+        }
+
+        bindEvents() {
+          window.addEventListener("resize", () => this.resize());
+
+          window.addEventListener("keydown", (e) => {
+            if (["Space", "ArrowUp", "ArrowDown"].includes(e.code)) {
+              e.preventDefault();
+            }
+
+            if (e.code === "ArrowDown") {
+              if (this.state === "running") this.dino.setDuck(true);
+              return;
+            }
+
+            if (e.code === "Space" || e.code === "ArrowUp") {
+              if (this.state === "waiting") {
+                this.startGame();
+              } else if (this.state === "gameover") {
+                this.startGame();
+              } else if (this.state === "running") {
+                this.dino.jump();
+              }
+            }
+          }, { passive: false });
+
+          window.addEventListener("keyup", (e) => {
+            if (e.code === "ArrowDown") {
+              this.dino.setDuck(false);
+            }
+          });
+
+          const onPointerDown = (e) => {
+            this.pointerDown = true;
+            this.pointerStartY = e.clientY;
+            this.pointerStartX = e.clientX;
+            this.pointerStartAt = performance.now();
+            this.touchDuck = false;
+
+            if (this.longPressTimer) clearTimeout(this.longPressTimer);
+            this.longPressTimer = setTimeout(() => {
+              if (this.pointerDown && this.state === "running") {
+                this.touchDuck = true;
+                this.dino.setDuck(true);
+              }
+            }, 130);
+          };
+
+          const onPointerMove = (e) => {
+            if (!this.pointerDown || this.state !== "running") return;
+            const dy = e.clientY - this.pointerStartY;
+            if (dy > Math.max(30, this.h * 0.04)) {
+              this.touchDuck = true;
+              this.dino.setDuck(true);
+            }
+          };
+
+          const onPointerUp = (e) => {
+            if (!this.pointerDown) return;
+            this.pointerDown = false;
+            if (this.longPressTimer) {
+              clearTimeout(this.longPressTimer);
+              this.longPressTimer = null;
+            }
+
+            const duration = performance.now() - this.pointerStartAt;
+            const dx = Math.abs(e.clientX - this.pointerStartX);
+            const dy = e.clientY - this.pointerStartY;
+            const absDy = Math.abs(dy);
+            const tap = duration < 260 && absDy < 20 && dx < 20;
+            const swipeDown = dy > Math.max(40, this.h * 0.06);
+
+            if (this.state === "waiting" || this.state === "gameover") {
+              this.startGame();
+              return;
+            }
+
+            if (swipeDown || this.touchDuck) {
+              this.dino.setDuck(false);
+            } else if (tap && this.state === "running") {
+              this.dino.jump();
+            }
+          };
+
+          this.canvas.addEventListener("pointerdown", onPointerDown, { passive: true });
+          this.canvas.addEventListener("pointermove", onPointerMove, { passive: true });
+          this.canvas.addEventListener("pointerup", onPointerUp, { passive: true });
+          this.canvas.addEventListener("pointercancel", onPointerUp, { passive: true });
+        }
+
+        spawnObstacle() {
+          const pteroChance = this.score > 250 ? Math.min(0.45, 0.1 + this.score / 2500) : 0;
+          const type = Math.random() < pteroChance ? "ptero" : "cactus";
+          const obstacle = new Obstacle(this, type, this.w + this.pixel * 6);
+          this.obstacles.push(obstacle);
+        }
+
+        update(dt) {
+          if (this.state !== "running") return;
+
+          this.speed = this.baseSpeed + Math.min(360, this.score * 0.85);
+          this.score += dt * (this.speed * 0.06);
+          this.flashClock += dt;
+
+          this.horizonOffset = (this.horizonOffset + this.speed * dt) % (this.pixel * 8);
+
+          this.dino.update(dt);
+          this.clouds.forEach((cloud) => cloud.update(dt));
+
+          this.spawnClock += dt;
+          this.spawnGap = Math.max(0.5, 1.35 - Math.min(0.8, this.score / 1300)) + Math.random() * 0.25;
+
+          const last = this.obstacles[this.obstacles.length - 1];
+          const minGap = this.pixel * (this.speed / 20);
+          if (!last || (this.w - last.x) > minGap) {
+            if (this.spawnClock >= this.spawnGap) {
+              this.spawnClock = 0;
+              this.spawnObstacle();
+            }
+          }
+
+          for (const obs of this.obstacles) {
+            obs.update(dt);
+          }
+          this.obstacles = this.obstacles.filter((obs) => obs.x + obs.getBounds().width > -20);
+
+          for (const obs of this.obstacles) {
+            if (this.pixelCollision(this.dino, obs)) {
+              this.gameOver();
+              break;
+            }
+          }
+
+          if (this.score > this.highScore) {
+            this.highScore = Math.floor(this.score);
+            this.writeHighScore();
+          }
+        }
+
+        pixelCollision(dino, obstacle) {
+          const dMask = dino.getCurrentMask();
+          const oMask = obstacle.getCurrentMask();
+          const px = this.pixel;
+
+          const dW = dMask[0].length * px;
+          const dH = dMask.length * px;
+          const oW = oMask[0].length * px;
+          const oH = oMask.length * px;
+
+          const left = Math.max(dino.x, obstacle.x);
+          const right = Math.min(dino.x + dW, obstacle.x + oW);
+          const top = Math.max(dino.y, obstacle.y);
+          const bottom = Math.min(dino.y + dH, obstacle.y + oH);
+
+          if (right <= left || bottom <= top) return false;
+
+          const sx = Math.floor(left);
+          const ex = Math.ceil(right);
+          const sy = Math.floor(top);
+          const ey = Math.ceil(bottom);
+
+          for (let y = sy; y < ey; y += px) {
+            for (let x = sx; x < ex; x += px) {
+              const dc = Math.floor((x - dino.x) / px);
+              const dr = Math.floor((y - dino.y) / px);
+              const oc = Math.floor((x - obstacle.x) / px);
+              const or = Math.floor((y - obstacle.y) / px);
+
+              if (
+                dr >= 0 && dr < dMask.length && dc >= 0 && dc < dMask[0].length &&
+                or >= 0 && or < oMask.length && oc >= 0 && oc < oMask[0].length &&
+                dMask[dr][dc] && oMask[or][oc]
+              ) {
+                return true;
+              }
+            }
+          }
+          return false;
+        }
+
+        currentTheme() {
+          const night = Math.floor(this.score / SCORE_STEP_FOR_THEME) % 2 === 1;
+          return night
+            ? { bg: "#101214", fg: "#f4f4f4", accent: "#cfd4da" }
+            : { bg: "#f7f7f7", fg: "#202020", accent: "#5a5a5a" };
+        }
+
+        drawGround(color) {
+          const y = this.groundY;
+          this.ctx.fillStyle = color;
+          this.ctx.fillRect(0, y, this.w, this.pixel);
+
+          const seg = this.pixel * 4;
+          const gap = this.pixel * 3;
+          for (let x = -this.horizonOffset; x < this.w + seg; x += seg + gap) {
+            this.ctx.fillRect(x, y + this.pixel * 2, seg, this.pixel);
+          }
+        }
+
+        drawHud(theme) {
+          this.ctx.fillStyle = theme.fg;
+          this.ctx.textAlign = "right";
+          this.ctx.textBaseline = "top";
+          this.ctx.font = `bold ${Math.max(14, this.pixel * 3)}px monospace`;
+          const score = String(Math.floor(this.score)).padStart(5, "0");
+          const hi = String(Math.floor(this.highScore)).padStart(5, "0");
+          this.ctx.fillText(`HI ${hi}  ${score}`, this.w - this.pixel * 3, this.pixel * 2);
+        }
+
+        drawCenterText(theme, title, subtitle) {
+          this.ctx.fillStyle = theme.fg;
+          this.ctx.textAlign = "center";
+          this.ctx.textBaseline = "middle";
+
+          this.ctx.font = `bold ${Math.max(18, this.pixel * 4)}px monospace`;
+          this.ctx.fillText(title, this.w / 2, this.h * 0.28);
+
+          this.ctx.fillStyle = theme.accent;
+          this.ctx.font = `${Math.max(12, this.pixel * 2.4)}px monospace`;
+          this.ctx.fillText(subtitle, this.w / 2, this.h * 0.28 + this.pixel * 7);
+        }
+
+        render() {
+          const theme = this.currentTheme();
+          this.ctx.fillStyle = theme.bg;
+          this.ctx.fillRect(0, 0, this.w, this.h);
+
+          this.clouds.forEach((cloud) => cloud.render(this.ctx, theme.accent));
+          this.drawGround(theme.fg);
+          this.obstacles.forEach((obs) => obs.render(this.ctx, theme.fg));
+          this.dino.render(this.ctx, theme.fg);
+          this.drawHud(theme);
+
+          if (this.state === "waiting") {
+            this.drawCenterText(theme, "DINO RUNNER", "点击 / 空格开始，向下滑动或下箭头下蹲");
+          }
+
+          if (this.state === "gameover") {
+            this.drawCenterText(theme, "GAME OVER", "点击 / 空格重新开始");
+          }
+
+          if (this.state === "running") {
+            const milestoneBlink = Math.floor(this.score / 100) > 0 && Math.floor(this.flashClock * 6) % 14 === 0;
+            if (milestoneBlink && Math.floor(this.score) % 100 < 4) {
+              this.ctx.fillStyle = theme.fg;
+              this.ctx.textAlign = "center";
+              this.ctx.textBaseline = "middle";
+              this.ctx.font = `bold ${Math.max(12, this.pixel * 2.2)}px monospace`;
+              this.ctx.fillText("+100", this.w / 2, this.pixel * 6);
+            }
+          }
+        }
+
+        loop(ts) {
+          if (!this.lastTime) this.lastTime = ts;
+          const dt = Math.min(0.033, (ts - this.lastTime) / 1000);
+          this.lastTime = ts;
+
+          this.update(dt);
+          this.render();
+
+          requestAnimationFrame((t) => this.loop(t));
+        }
+      }
+
+      const canvas = document.getElementById("gameCanvas");
+      new Game(canvas);
+    })();
+  </script>
+</body>
+</html>
